@@ -13,7 +13,9 @@ public:
     typedef int size_type;
     typedef uint8_t raw;
     typedef raw* raw_ptr;
+    typedef const raw* const_raw_ptr;
     typedef T* obj_ptr;
+    typedef const T* const_obj_ptr;
     typedef T value_type;
 
     vector_t(): m_raw_ptr(nullptr), m_size(0), m_capacity(0) {}
@@ -51,14 +53,27 @@ public:
                  m_raw_ptr);
     }
 
+    vector_t(std::initializer_list<T> list):
+        m_raw_ptr(
+            new raw[list.size() * sizeof(T)]
+        ),
+        m_size(list.size()),
+        m_capacity(list.size()) {
+            copy(
+                reinterpret_cast<const_raw_ptr>(list.begin()),
+                list.size(),
+                m_raw_ptr
+            );
+    }
+
     vector_t& operator=(const vector_t &other) {
         if(&other != this) {
             if(m_capacity < other.m_size) {
                 destroy();
                 m_raw_ptr = new raw[other.m_size * sizeof(T)];
-                assign(other.m_raw_ptr,
-                       other.m_size,
-                       m_raw_ptr);
+                copy(other.m_raw_ptr,
+                     other.m_size,
+                     m_raw_ptr);
 
                 m_size = other.m_size;
                 m_capacity = m_size;
@@ -143,10 +158,10 @@ private:
     size_type m_size;
     size_type m_capacity;
 
-    void copy(raw_ptr src, size_type size, raw_ptr res) {
-        obj_ptr obj_src = reinterpret_cast<obj_ptr>(src);
+    void copy(const_raw_ptr src, size_type size, raw_ptr res) {
+        const_obj_ptr obj_src = reinterpret_cast<const_obj_ptr>(src);
         obj_ptr obj_res = reinterpret_cast<obj_ptr>(res);
-        for (size_type i = 0; i < size; ++obj_res)
+        for (size_type i = 0; i < size; ++i)
             new (&obj_res[i])T(obj_src[i]);
     }
 

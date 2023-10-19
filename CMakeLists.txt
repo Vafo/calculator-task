@@ -9,6 +9,7 @@ target_compile_features(compiler_flags INTERFACE cxx_std_11)
 
 # Include src folders
 add_subdirectory(src)
+add_subdirectory(test)
 
 include(FetchContent)
 
@@ -20,6 +21,8 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
+add_library(test_link INTERFACE)
+target_link_libraries(test_link INTERFACE Catch2::Catch2WithMain)
+
 add_executable(calculator_app main.cpp)
-target_link_libraries(calculator_app)
 
