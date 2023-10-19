@@ -125,4 +125,42 @@ TEST_CASE("vector_t: constructor calls", "[vector_t][normal]") {
     REQUIRE(example_t::assignment_op == 5);
 }
 
+TEST_CASE("stack_t: check LIFO", "[stack_t][normal]") {
+    char text[] = "abcdefg";
+    int text_len = sizeof(text)/sizeof(text[0]);
+    stack_t<char> st;
+
+    for(int i = 0; i < text_len; ++i)
+        st.push(text[i]);
+
+    for(int i = text_len - 1; i >= 0; --i) {
+        REQUIRE(text[i] == st.peek());
+        st.pop();
+    }
+
+}
+
+TEST_CASE("stack_t: constructor & assignment", "[stack_t][normal]") {
+    stack_t<int> st = {0, 1, 2, 3};
+    
+    SECTION("copy constructor") {
+        stack_t<int> st2(st);
+        REQUIRE(st == st2);
+    }
+
+    SECTION("assignment operator") {
+        stack_t<int> st2;
+        REQUIRE_FALSE(st == st2);
+        st2 = st;
+        REQUIRE(st == st2);
+    }
+
+    SECTION("assignment operator 2") {
+        stack_t<int> st2 = {1, 2, 3};
+        REQUIRE_FALSE(st == st2);
+        st2 = st;
+        REQUIRE(st == st2);
+    }
+}
+
 } // namespace postfix::util

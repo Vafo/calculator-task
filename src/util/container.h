@@ -122,6 +122,20 @@ public:
         return obj[n];
     }
 
+    bool
+    operator==(const vector_t<T>& other) {
+        if(m_size != other.m_size)
+            return false;
+        
+        obj_ptr obj_1 = reinterpret_cast<obj_ptr>(m_raw_ptr);
+        obj_ptr obj_2 = reinterpret_cast<obj_ptr>(other.m_raw_ptr);
+        for(size_t i = 0; i < m_size; ++i)
+            if(obj_1[i] != obj_2[i])
+                return false;
+        
+        return true;
+    }
+
     void push_back(const value_type& el) {
         grow(1);
         obj_ptr obj = reinterpret_cast<obj_ptr>(m_raw_ptr);
@@ -197,6 +211,15 @@ class stack_t {
 public:
     typedef typename Container::value_type value_type;
     typedef typename Container::size_type size_type;
+
+    stack_t() { }
+    
+    stack_t(std::initializer_list<T> list): c(list) {}
+
+    bool
+    operator==(const stack_t& other) {
+        return c == other.c;
+    }
 
     void push(value_type &obj) {
         c.push_back(obj);
