@@ -221,7 +221,7 @@ public:
         return c == other.c;
     }
 
-    void push(value_type &obj) {
+    void push(const value_type &obj) {
         c.push_back(obj);
     }
 
