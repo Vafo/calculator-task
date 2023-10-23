@@ -25,4 +25,5 @@ add_library(test_link INTERFACE)
 target_link_libraries(test_link INTERFACE Catch2::Catch2WithMain)
 
 add_executable(calculator_app main.cpp)
+target_link_libraries(calculator_app calculator_impl)
 
