@@ -125,6 +125,33 @@ TEST_CASE("vector_t: constructor calls", "[vector_t][normal]") {
     REQUIRE(example_t::assignment_op == 5);
 }
 
+TEST_CASE("vector_t: erase", "[vector_t][normal]") {
+    vector_t<int> ivec(10);
+    std::iota(ivec.begin(), ivec.end(), 0);
+
+    SECTION("erase begin()") {
+        for(int i = 0; i < 10; ++i) {
+            vector_t<int> test_vec(10 - i);
+            std::iota(test_vec.begin(), test_vec.end(), i);
+            REQUIRE_THAT(ivec, Catch::Matchers::RangeEquals(test_vec));
+
+            ivec.erase(ivec.begin());
+        }
+    }
+
+    for(int i = 0; i < 10; ++i) {
+        SECTION("erase at ith pos") {
+            ivec.erase(ivec.begin() + i);
+            vector_t<int> test_vec(10 - 1);
+            std::iota(test_vec.begin(), test_vec.begin() + i, 0);
+            std::iota(test_vec.begin() + i, test_vec.end(), i + 1);
+
+            REQUIRE_THAT(ivec, Catch::Matchers::RangeEquals(test_vec));
+        }
+    }
+
+}
+
 TEST_CASE("stack_t: check LIFO", "[stack_t][normal]") {
     char text[] = "abcdefg";
     int text_len = sizeof(text)/sizeof(text[0]);

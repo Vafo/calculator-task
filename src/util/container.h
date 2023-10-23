@@ -140,6 +140,17 @@ public:
         }
     }
 
+    void erase(obj_ptr el) {
+        assert(begin() <= el && el < end());
+        allocator.destroy(el);
+        obj_ptr iter = el;
+        while(iter < (end() - 1)) {
+            *iter = std::move(*(iter+1));
+            iter++;
+        }
+        m_size--;
+    }
+
     obj_ptr begin() {
         return m_raw_ptr;
     }
