@@ -13,18 +13,36 @@ public:
             impl = new shared_ptr_impl(ptr);
     }
 
+    // allocate copy of obj
     shared_ptr(const T& obj): impl(NULL) {
         // TODO: Reduce to 1 allocator call
-        T *ptr = new T(obj);
+        T *ptr = allocator.allocate(1);
+        allocator.construct(ptr, obj);
         impl = new shared_ptr_impl(ptr);
     }
 
+    // allocate copy of obj
+    // Argument is derived object
     template<typename D>
-    shared_ptr(const D* obj): impl(NULL) {
+    shared_ptr(const D& obj): impl(NULL) {
         static_assert(std::is_base_of<T, D>::value);
-        T *ptr = new D(*obj);
+        std::allocator<D> d_allocator;
+        D *ptr = d_allocator.allocate(1);
+        d_allocator.construct(ptr, obj);
         impl = new shared_ptr_impl(ptr);
     }
+
+    // allocate copy of obj
+    // Argument is pointer to derived object
+    template<typename D>
+    shared_ptr(D* obj): impl(NULL) {
+        static_assert(std::is_base_of<T, D>::value);
+        std::allocator<D> d_allocator;
+        D *ptr = d_allocator.allocate(1);
+        d_allocator.construct(ptr, *obj);
+        impl = new shared_ptr_impl(ptr);
+    }
+    
 
     shared_ptr(const shared_ptr& other): impl(other.impl) {
         if(impl != NULL) {
@@ -61,8 +79,7 @@ public:
         if(other.impl != NULL)
             ++other.impl->ref_count;
 
-        if(impl != NULL)
-            dec_n_check();
+        dec_n_check();
 
         impl = other.impl;
         return *this;
@@ -78,19 +95,24 @@ private:
         shared_ptr_impl(T *ptr): obj(ptr), ref_count(1) {}
 
         ~shared_ptr_impl() {
-            delete obj;
+            allocator.destroy(obj);
+            allocator.deallocate(obj, 1);
         }
 
         T *obj;
         int ref_count;
+        std::allocator<T> allocator;
     };
 
     shared_ptr_impl* impl;
+    std::allocator<T> allocator;
 
     void dec_n_check() {
-        --impl->ref_count;
-        if(impl->ref_count == 0)
-            delete impl;
+        if(impl != NULL) {
+            --impl->ref_count;
+            if(impl->ref_count == 0)
+                delete impl;
+        }
     }
 };
 
