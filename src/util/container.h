@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cinttypes>
 #include <cassert>
+#include <memory>
 
 namespace postfix::util {
 
@@ -187,8 +188,10 @@ private:
         if(m_size + n > m_capacity) {
             size_type new_size = std::max(m_size + n, m_capacity * 2);
             obj_ptr tmp = allocator.allocate(new_size);
-            if(m_raw_ptr != NULL)
-                std::copy(m_raw_ptr, m_raw_ptr + m_size, tmp);
+            if(m_raw_ptr != NULL) {
+                std::uninitialized_copy(m_raw_ptr, m_raw_ptr + m_size, tmp);
+                allocator.deallocate(m_raw_ptr, m_capacity);
+            }
             m_raw_ptr = tmp;
             m_capacity = new_size;
         }
