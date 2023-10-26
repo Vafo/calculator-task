@@ -139,4 +139,20 @@ TEST_CASE("postfix_converter_impl_t: to_token", "[postfix_converter_impl_t][norm
 
 }
 
+TEST_CASE("postfix_converter_t: conversion", "[postfix_converter_t][normal]") {
+    postfix_converter_t<
+        token_minus_t,
+        token_plus_t
+    > converter;
+
+    // Some working examples
+
+    postfix_expr_t expr = converter.convert("1 + 2");
+    REQUIRE(expr.evaluate() == 3);
+
+    expr = converter.convert("3-5");
+    REQUIRE(expr.evaluate() == -2);
+}
+
+
 } // namespace postfix

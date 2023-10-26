@@ -69,6 +69,15 @@ private:
 
 };
 
+// Some idea on reducing code bloat
+// template<class... Ts>
+// util::shared_ptr<token_factory_base_t>
+// make_shared_factory_list[] = { 
+//         util::shared_ptr<token_factory_base_t> (
+//             token_factory_t<Ts>()
+//         )...
+// };
+
 } // namespace detail
 
 template<class... Ts>
@@ -89,9 +98,18 @@ private:
 template<class... Ts>
 class postfix_converter_t {
 public:
-
+    // FIXME: a lot of repetition
     postfix_converter_t():
     impl({
+            util::shared_ptr<token_factory_base_t> (
+                token_factory_t<token_left_parenthesis_t>()
+            ),
+            util::shared_ptr<token_factory_base_t> (
+                token_factory_t<token_right_parenthesis_t>()
+            ),
+            util::shared_ptr<token_factory_base_t> (
+                token_factory_t<token_comma_t>()
+            ),
             util::shared_ptr<token_factory_base_t>(
                 token_factory_t<Ts>()
             )...
@@ -116,32 +134,28 @@ postfix_converter_t<Ts...>::convert(const std::string& input) {
     util::stack_t< util::shared_ptr<token_base_t> > st;
     postfix_expr_t postfix;
 
+    // start and end of postfix expr
+    std::string edited_input = std::string("(") + input + std::string(")");
+
     const char 
-        *beg = input.begin().base(),
-        *end = input.end().base();
+        *beg = edited_input.begin().base(),
+        *end = edited_input.end().base();
     
-    // start of postfix expr
-    // postfix.expr.push_back(
-    //     util::shared_ptr<token_base_t>({token_left_parenthesis})
-    // )
 
     util::shared_ptr<token_base_t> token;
     while(beg != end) {
         beg = impl.to_token(beg, end, token);
         // put token into stack
-            // apply logic of token of emplacement
-            // if token is emplaceable, emplace it
+        // apply logic of token of emplacement
+        token->expr_push_logic(postfix.expr, st);
     }
 
-    // end of postfix expr
-    // postfix.expr.push_back(
-    //     util::shared_ptr<token_base_t>({token_right_parenthesis})
-    // )
 
     // try to evaluate postfix expr
-        // if is executable, return it
-        // otherwise, throw exception
-
+    // if is executable, return it
+    postfix.evaluate();
+    // otherwise, throw exception
+    return postfix;
 }
 
 

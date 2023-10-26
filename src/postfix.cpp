@@ -63,44 +63,26 @@ postfix_converter_impl_t::to_operator(
     while(beg != end && isspace(*beg))
         beg++;
 
-    switch(*beg) {
-        case '(':
-            // construct left-brace token
-            return beg + 1;
-        break;
-        case ')':
-            // construct right-brace token
-            return beg + 1;
-        case ',':
-            // construct comma token
-            return beg + 1;
-    }
-
-    // Interval of factory_names, whose prefix equals prefix of input
-    std::string 
-        *fact_beg = factory_names.begin(),
-        *fact_end = factory_names.end(),
-        *fact_iter;
-
     std::string op_name; // potential operation name
     util::vector_t<int> candidates(factory_names.size()); // Ideal type would be unordered_set
     std::iota(candidates.begin(), candidates.end(), 0);
     int comp_val;
     int found_idx = -1;
 
-    while(!candidates.empty()) {
+    while(!candidates.empty() && beg != end) {
         op_name += *beg;
         beg++;
-
         for(
             int *cand_beg = candidates.begin(); 
-            cand_beg != candidates.end() && beg != end;
+            cand_beg != candidates.end();
             cand_beg++
         ) {
-            
             if( (comp_val = factory_names[*cand_beg].compare(op_name)) == 0 ) {
                 found_idx = *cand_beg;
                 out_oper = factories[found_idx]->build();
+                // TODO:
+                //      push into candidates_of_same_name,
+                //      then loop for exact match of operands
                 return beg;
             }
             else if (comp_val < 0) {
@@ -125,6 +107,7 @@ postfix_converter_impl_t::to_token(
 ) {
     const char *iter;
     double num;
+
     iter = to_number(beg, end, num);
     if(iter != beg) {
         token_number_t token_num(num);
@@ -145,5 +128,17 @@ postfix_converter_impl_t::to_token(
 }
 
 } // namespace detail
+
+double postfix_expr_t::evaluate() {
+    util::stack_t<double> val_st;
+    for(int i = 0; i < expr.size(); ++i) {
+        expr[i]->process(val_st);
+    }
+
+    if(val_st.size() != 1)
+        throw std::logic_error("postfix_expr_t::evaluate(): could not evaluate expression");
+
+    return val_st.peek();
+}
 
 } // namespace postfix
