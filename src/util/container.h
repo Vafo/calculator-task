@@ -43,7 +43,7 @@ public:
             allocator.allocate(other.m_size)
         ),
         m_size(other.m_size),
-        m_capacity(other.m_capacity) {
+        m_capacity(other.m_size) {
             copy(other.m_raw_ptr,
                  other.m_size, 
                  m_raw_ptr);
@@ -189,8 +189,10 @@ private:
             size_type new_size = std::max(m_size + n, m_capacity * 2);
             obj_ptr tmp = allocator.allocate(new_size);
             if(m_raw_ptr != NULL) {
+                // FIXME: Is there any way to avoid copy, but just move???
+                // ANS: Ignore it for now
                 std::uninitialized_copy(m_raw_ptr, m_raw_ptr + m_size, tmp);
-                allocator.deallocate(m_raw_ptr, m_capacity);
+                destroy();
             }
             m_raw_ptr = tmp;
             m_capacity = new_size;
@@ -198,7 +200,8 @@ private:
     }
 
     void destroy() {
-        for(size_type i = 0; i < m_size; ++i)
+        // Destroy from last to first
+        for(size_type i = m_size - 1; i >= 0; --i)
             allocator.destroy(&m_raw_ptr[i]);
         
         allocator.deallocate(m_raw_ptr, m_capacity);

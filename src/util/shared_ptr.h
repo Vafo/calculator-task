@@ -21,6 +21,8 @@ public:
         impl = new shared_ptr_impl(ptr);
     }
 
+    // TODO: Check for availability of conversion. It should not be only derived -> base
+
     // allocate copy of obj
     // Argument is derived object
     template<typename D>
@@ -37,10 +39,8 @@ public:
     template<typename D>
     shared_ptr(D* obj): impl(NULL) {
         static_assert(std::is_base_of<T, D>::value);
-        std::allocator<D> d_allocator;
-        D *ptr = d_allocator.allocate(1);
-        d_allocator.construct(ptr, *obj);
-        impl = new shared_ptr_impl(ptr);
+        if(obj != NULL)
+            impl = new shared_ptr_impl(obj);
     }
     
 
@@ -114,17 +114,16 @@ private:
                 delete impl;
         }
     }
+
+public:
+    bool operator== (const shared_ptr<T> &b) {
+        return impl->obj == b.impl->obj;
+    }
+
+    bool operator!= (const shared_ptr<T> &b) {
+        return !(*this == b);
+    }
 };
-
-template<typename T>
-bool operator== (const shared_ptr<T> &a, const shared_ptr<T> &b) {
-    return a.impl->obj == b.impl->obj;
-}
-
-template<typename T>
-bool operator!= (const shared_ptr<T> &a, const shared_ptr<T> &b) {
-    return !(a == b);
-}
 
 } // namespace util
 
