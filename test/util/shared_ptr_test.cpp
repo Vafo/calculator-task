@@ -85,4 +85,16 @@ TEST_CASE("shared_ptr: count const and dest of class", "[shared_ptr][normal]") {
 
 }
 
+TEST_CASE("shared_ptr: copy-and-swap test", "[shared_ptr][normal][assignment]") {
+    const int iterations = 10;
+    shared_ptr<std::string> ptr = std::string("Heya!");
+
+    shared_ptr<std::string> ptr_copy;
+    for(int i = 0; i < iterations; ++i) {
+        ptr_copy = ptr;
+        REQUIRE( ((ptr_copy == ptr) && (*ptr == *ptr_copy)) );
+    }
+
+}
+
 } // namespace postfix::util

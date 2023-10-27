@@ -77,7 +77,7 @@ public:
     shared_ptr&
     operator= (shared_ptr other) {
         // copy and swap
-        swap(other);
+        swap(*this, other);
         
         return *this;
     }
@@ -114,12 +114,12 @@ private:
 
 
 public:
-    void swap(shared_ptr &other) {
+    friend void swap(shared_ptr &a, shared_ptr &b) {
         using std::swap;
 
-        swap(this->impl, other.impl);
+        swap(a.impl, b.impl);
         // Is there need for swapping allocator?
-        swap(this->allocator, other.allocator);
+        swap(a.allocator, b.allocator);
     }
 
     bool operator== (const shared_ptr<T> &b) {
