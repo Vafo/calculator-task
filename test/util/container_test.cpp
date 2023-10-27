@@ -117,12 +117,17 @@ TEST_CASE("vector_t: constructor calls", "[vector_t][normal]") {
     }
     REQUIRE(example_t::destruct == 5);
     vec = vec2;
+/*  
+    No more valid tests, as copying of vector, does not consider reusing previous space
+    vector_t assignment uses copy-and-swap idiom
+
     // They have enough space, no space for object is allocated
     REQUIRE(example_t::default_const + example_t::copy_const == 15);
     // No object is deleted as well
     REQUIRE(example_t::destruct == 5);
     // They were assigned
     REQUIRE(example_t::assignment_op == 5);
+*/
 }
 
 TEST_CASE("vector_t: erase", "[vector_t][normal]") {

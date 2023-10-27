@@ -62,39 +62,39 @@ public:
             );
     }
 
-    vector_t& operator=(const vector_t &other) {
-        if(&other != this) {
-            if(m_capacity < other.m_size) {
-                destroy();
-                m_raw_ptr = allocator.allocate(other.m_size);
-                copy(other.m_raw_ptr,
-                     other.m_size,
-                     m_raw_ptr);
+    vector_t& operator=(vector_t other) {
+        // if(&other != this) {
+        //     if(m_capacity < other.m_size) {
+        //         destroy();
+        //         m_raw_ptr = allocator.allocate(other.m_size);
+        //         copy(other.m_raw_ptr,
+        //              other.m_size,
+        //              m_raw_ptr);
 
-                m_size = other.m_size;
-                m_capacity = m_size;
-            } else if(m_size >= other.m_size) {
-                assign(other.m_raw_ptr,
-                       other.m_size,
-                       m_raw_ptr);
+        //         m_size = other.m_size;
+        //         m_capacity = m_size;
+        //     } else if(m_size >= other.m_size) {
+        //         assign(other.m_raw_ptr,
+        //                other.m_size,
+        //                m_raw_ptr);
                 
-                for(size_t i = other.m_size; i < m_size; ++i)
-                    allocator.destroy(&m_raw_ptr[i]);
+        //         for(size_t i = other.m_size; i < m_size; ++i)
+        //             allocator.destroy(&m_raw_ptr[i]);
 
-                m_size = other.m_size;
-            } else { // m_size < other.m_size < m_capacity
-                assign(other.m_raw_ptr,
-                       m_size,
-                       m_raw_ptr);
-                copy(other.m_raw_ptr + m_size,
-                     other.m_size - m_size, 
-                     m_raw_ptr + m_size);
+        //         m_size = other.m_size;
+        //     } else { // m_size < other.m_size < m_capacity
+        //         assign(other.m_raw_ptr,
+        //                m_size,
+        //                m_raw_ptr);
+        //         copy(other.m_raw_ptr + m_size,
+        //              other.m_size - m_size, 
+        //              m_raw_ptr + m_size);
 
-                m_size = other.m_size;
-            }
+        //         m_size = other.m_size;
+        //     }
             
-        }
-
+        // }
+        swap(other);
         return *this;
     }
 
@@ -205,6 +205,16 @@ private:
             allocator.destroy(&m_raw_ptr[i]);
         
         allocator.deallocate(m_raw_ptr, m_capacity);
+    }
+
+public:
+    void swap(vector_t &other) {
+        using std::swap;
+
+        swap(this->allocator, other.allocator);
+        swap(this->m_capacity, other.m_capacity);
+        swap(this->m_size, other.m_size);
+        swap(this->m_raw_ptr, other.m_raw_ptr);
     }
 
 };
