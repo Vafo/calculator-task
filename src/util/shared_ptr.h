@@ -112,14 +112,16 @@ private:
         }
     }
 
+
+public:
     void swap(shared_ptr &other) {
         using std::swap;
 
         swap(this->impl, other.impl);
+        // Is there need for swapping allocator?
         swap(this->allocator, other.allocator);
     }
 
-public:
     bool operator== (const shared_ptr<T> &b) {
         return impl->obj == b.impl->obj;
     }
