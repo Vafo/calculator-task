@@ -195,4 +195,16 @@ TEST_CASE("stack_t: constructor & assignment", "[stack_t][normal]") {
     }
 }
 
+TEST_CASE("stack_t: assignment operator", "[stack_t][normal][assignment]") {
+    const int iterations = 10;
+    stack_t<int> st = {1, 2, 3, 4};
+
+    stack_t<int> st_copy;
+    for(int i = 0; i < iterations; ++i) {
+        st.push(i);
+        st_copy = st;
+        REQUIRE(st == st_copy);
+    }
+}
+
 } // namespace postfix::util

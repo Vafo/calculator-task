@@ -63,38 +63,7 @@ public:
     }
 
     vector_t& operator=(vector_t other) {
-        // if(&other != this) {
-        //     if(m_capacity < other.m_size) {
-        //         destroy();
-        //         m_raw_ptr = allocator.allocate(other.m_size);
-        //         copy(other.m_raw_ptr,
-        //              other.m_size,
-        //              m_raw_ptr);
-
-        //         m_size = other.m_size;
-        //         m_capacity = m_size;
-        //     } else if(m_size >= other.m_size) {
-        //         assign(other.m_raw_ptr,
-        //                other.m_size,
-        //                m_raw_ptr);
-                
-        //         for(size_t i = other.m_size; i < m_size; ++i)
-        //             allocator.destroy(&m_raw_ptr[i]);
-
-        //         m_size = other.m_size;
-        //     } else { // m_size < other.m_size < m_capacity
-        //         assign(other.m_raw_ptr,
-        //                m_size,
-        //                m_raw_ptr);
-        //         copy(other.m_raw_ptr + m_size,
-        //              other.m_size - m_size, 
-        //              m_raw_ptr + m_size);
-
-        //         m_size = other.m_size;
-        //     }
-            
-        // }
-        swap(other);
+        swap(*this, other);
         return *this;
     }
 
@@ -208,13 +177,12 @@ private:
     }
 
 public:
-    void swap(vector_t &other) {
+    friend void swap(vector_t &a, vector_t &b) {
         using std::swap;
-
-        swap(this->allocator, other.allocator);
-        swap(this->m_capacity, other.m_capacity);
-        swap(this->m_size, other.m_size);
-        swap(this->m_raw_ptr, other.m_raw_ptr);
+        swap(a.allocator, b.allocator);
+        swap(a.m_capacity, b.m_capacity);
+        swap(a.m_size, b.m_size);
+        swap(a.m_raw_ptr, b.m_raw_ptr);
     }
 
 };
@@ -232,6 +200,12 @@ public:
     bool
     operator==(const stack_t& other) {
         return c == other.c;
+    }
+
+    stack_t&
+    operator=(stack_t other) {
+        swap(*this, other);
+        return *this;
     }
 
     void push(const value_type &obj) {
@@ -253,6 +227,14 @@ public:
 
     bool empty() {
         return c.empty();
+    }
+
+// swap interface
+public:
+    friend void swap(stack_t &a, stack_t &b) {
+        using std::swap;
+        
+        swap(a.c, b.c);
     }
 
 protected:
