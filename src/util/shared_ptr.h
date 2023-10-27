@@ -3,6 +3,8 @@
 
 #include <cassert>
 
+#include "util.h"
+
 namespace postfix::util {
 
 template<typename T>
@@ -75,13 +77,10 @@ public:
     }
 
     shared_ptr&
-    operator= (const shared_ptr& other) {
-        if(other.impl != NULL)
-            ++other.impl->ref_count;
-
-        dec_n_check();
-
-        impl = other.impl;
+    operator= (shared_ptr other) {
+        // copy and swap
+        swap(*this, other);
+        
         return *this;
     }
 
@@ -95,6 +94,9 @@ private:
         shared_ptr_impl(T *ptr): obj(ptr), ref_count(1) {}
 
         ~shared_ptr_impl() {
+            // checked delete
+            check_if_deletable(obj);        
+
             allocator.destroy(obj);
             allocator.deallocate(obj, 1);
         }
@@ -115,7 +117,16 @@ private:
         }
     }
 
+
 public:
+    friend void swap(shared_ptr &a, shared_ptr &b) {
+        using std::swap;
+
+        swap(a.impl, b.impl);
+        // Is there need for swapping allocator?
+        swap(a.allocator, b.allocator);
+    }
+
     bool operator== (const shared_ptr<T> &b) {
         return impl->obj == b.impl->obj;
     }
