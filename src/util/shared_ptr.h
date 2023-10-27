@@ -75,13 +75,10 @@ public:
     }
 
     shared_ptr&
-    operator= (const shared_ptr& other) {
-        if(other.impl != NULL)
-            ++other.impl->ref_count;
-
-        dec_n_check();
-
-        impl = other.impl;
+    operator= (shared_ptr other) {
+        // copy and swap
+        swap(other);
+        
         return *this;
     }
 
@@ -113,6 +110,13 @@ private:
             if(impl->ref_count == 0)
                 delete impl;
         }
+    }
+
+    void swap(shared_ptr &other) {
+        using std::swap;
+
+        swap(this->impl, other.impl);
+        swap(this->allocator, other.allocator);
     }
 
 public:
