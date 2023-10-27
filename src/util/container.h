@@ -6,6 +6,8 @@
 #include <cassert>
 #include <memory>
 
+#include "util.h"
+
 namespace postfix::util {
 
 template<typename T>
@@ -169,6 +171,8 @@ private:
     }
 
     void destroy() {
+        // checked delete (placed only in 1 place)
+        check_if_deletable(m_raw_ptr);
         // Destroy from last to first
         for(size_type i = m_size - 1; i >= 0; --i)
             allocator.destroy(&m_raw_ptr[i]);

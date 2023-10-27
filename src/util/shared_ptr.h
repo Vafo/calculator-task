@@ -3,6 +3,8 @@
 
 #include <cassert>
 
+#include "util.h"
+
 namespace postfix::util {
 
 template<typename T>
@@ -92,6 +94,9 @@ private:
         shared_ptr_impl(T *ptr): obj(ptr), ref_count(1) {}
 
         ~shared_ptr_impl() {
+            // checked delete
+            check_if_deletable(obj);        
+
             allocator.destroy(obj);
             allocator.deallocate(obj, 1);
         }

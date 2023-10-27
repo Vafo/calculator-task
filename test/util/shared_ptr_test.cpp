@@ -97,4 +97,11 @@ TEST_CASE("shared_ptr: copy-and-swap test", "[shared_ptr][normal][assignment]") 
 
 }
 
+struct empty_t;
+
+TEST_CASE("shared_ptr: checked delete", "[shared_ptr][normal]") {
+    // Uncomment to check (is there other way around to check it automatically?)
+    // shared_ptr<empty_t> ptr;
+}
+
 } // namespace postfix::util
