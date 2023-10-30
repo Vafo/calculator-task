@@ -1,6 +1,6 @@
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_library(util_test OBJECT container_test.cpp shared_ptr_test.cpp)
+add_library(util_test OBJECT container_test.cpp shared_ptr_test.cpp unique_ptr_test.cpp)
 
 target_include_directories(util_test PUBLIC ${CMAKE_SOURCE_DIR}/src/util)
 
