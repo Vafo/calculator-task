@@ -5,7 +5,8 @@
 
 #include <stdexcept>
 
-#include "util/container.h"
+#include "util/vector.h"
+#include "util/stack.h"
 #include "util/shared_ptr.h"
 
 namespace postfix {

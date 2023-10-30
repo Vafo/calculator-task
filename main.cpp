@@ -7,7 +7,6 @@
 #include "token.h"
 
 #include "util/shared_ptr.h"
-#include "util/container.h"
 
 
 int main(int argc, char *argv[]) {
