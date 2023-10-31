@@ -13,39 +13,29 @@ class unique_ptr {
 public:
     unique_ptr(): ptr(nullptr) { }
 
-    unique_ptr(const unique_ptr& other): ptr(NULL) {
-        // Deep copy
-        if(other.get() != NULL)
-            ptr = new T(*other.get());
-    }
-    // Is there any way to combine alike copy and conversion copy into single copy?
-    // unique_ptr(T *in_ptr): ptr(in_ptr) {}
+    unique_ptr(const unique_ptr& other) = delete;
     template<typename D, typename D_Deleter>
-    unique_ptr(const unique_ptr<D, D_Deleter>& other): ptr(NULL) {
-        // D_Deleter is ignored
+    unique_ptr(unique_ptr<D, D_Deleter>&& other): ptr(NULL) {
         static_assert(std::is_base_of<T, D>::value);
-        // Deep copy
-        if(other.get() != NULL)
-            ptr = new D(*other.get());
+        reset(other.release());
     }
 
     template<typename D>
-    unique_ptr(D *in_ptr) {
+    explicit unique_ptr(D *in_ptr): ptr(in_ptr) {
         static_assert(std::is_base_of<T, D>::value);
-        ptr = in_ptr;
     }
 
+    unique_ptr& operator=(const unique_ptr& other) = delete;
     template<typename D, typename D_Deleter>
-    unique_ptr& operator=(const unique_ptr<D, D_Deleter> &other) {
-        unique_ptr tmp(other);
-        this->swap(tmp);
-
-        return *this;
+    unique_ptr& operator=(unique_ptr<D, D_Deleter>&& other) {
+        reset(other.release());
     }
 
     ~unique_ptr() {
-        Deleter deleter;
-        deleter(ptr);
+        if(ptr != NULL) {
+            Deleter deleter;
+            deleter(ptr);
+        }
     }
 
     void swap(unique_ptr& other) {
@@ -74,13 +64,17 @@ public:
         return ptr;
     }
 
-    void release() {
-        reset(NULL);
+    T* release() {
+        T *tmp = ptr;
+        ptr = NULL;
+        return tmp;
     }
 
     void reset(T *new_ptr) {
-        Deleter deleter;
-        deleter(ptr);
+        if(ptr != NULL) {
+            Deleter deleter;
+            deleter(ptr);
+        }
         ptr = new_ptr;
     }
 
