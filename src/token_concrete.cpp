@@ -14,5 +14,6 @@ const std::string token_comma::name = ",";
 // Operators
 const std::string token_plus::name = "+";
 const std::string token_minus::name = "-";
+const std::string token_multiplication::name = "*";
 
 } // namespace postfix

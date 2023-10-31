@@ -71,4 +71,15 @@ token_t minus() {
     return token;
 }
 
+token_t multiplication() {
+    token_multiplication multi;
+    token_t token(
+        multi,
+        token_strategies::do_calc_apply<token_multiplication, token_apply_functions>,
+        token_strategies::do_push_with_precedence<token_multiplication>
+    );
+    
+    return token;
+}
+
 } // namespace postfix::builder

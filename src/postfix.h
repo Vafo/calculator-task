@@ -94,10 +94,10 @@ private:
 
 class postfix_expr_t {
 public:
-    double evaluate();
-
-private:
     postfix_expr_t() {}
+
+    double evaluate();
+private:
 
     util::vector_t< token_t > expr;
 
@@ -114,7 +114,8 @@ public:
         builder::comma(),
         
         builder::plus(),
-        builder::minus(),   
+        builder::minus(),
+        builder::multiplication()
     }) { }
 
     postfix_expr_t
