@@ -3,7 +3,13 @@
 #include <cstring>
 #include <numeric>
 
-#include "util/container.h"
+#include "token.h"
+#include "token_concrete.h"
+#include "token_factory.h"
+#include "token_builder.h"
+
+#include "util/vector.h"
+#include "util/stack.h"
 #include "util/shared_ptr.h"
 
 namespace postfix {
@@ -54,7 +60,7 @@ const char *
 postfix_converter_impl_t::to_operator(
     const char *beg,
     const char *end,
-    util::shared_ptr<token_base_t> &out_oper /*out*/
+    token_t& out_oper /*out*/
 ) {
     assert(beg != NULL && end != NULL);
     if(beg == end)
@@ -79,7 +85,7 @@ postfix_converter_impl_t::to_operator(
         ) {
             if( (comp_val = factory_names[*cand_beg].compare(op_name)) == 0 ) {
                 found_idx = *cand_beg;
-                out_oper = factories[found_idx]->build();
+                out_oper = factories[found_idx].build();
                 // TODO:
                 //      push into candidates_of_same_name,
                 //      then loop for exact match of operands
@@ -103,19 +109,18 @@ const char*
 postfix_converter_impl_t::to_token(
     const char* beg,
     const char* end,
-    util::shared_ptr<token_base_t> &out_token /*out*/
+    token_t& out_token /*out*/
 ) {
     const char *iter;
     double num;
 
     iter = to_number(beg, end, num);
     if(iter != beg) {
-        token_number_t token_num(num);
-        out_token = util::shared_ptr<token_base_t>(token_num);
+        out_token = builder::number(num);
         return iter;
     }
 
-    util::shared_ptr<token_base_t> tmp_token;
+    token_t tmp_token;
     iter = to_operator(beg, end, tmp_token);
     if(iter != beg) {
         out_token = tmp_token;
@@ -129,10 +134,45 @@ postfix_converter_impl_t::to_token(
 
 } // namespace detail
 
+
+// -a + foo(b*c) * d
+// + *
+// a-bc*foo d*+
+// if 2 conseq operators, just push (??? not valid statement anymore?)
+
+postfix_expr_t
+postfix_converter_t::convert(const std::string& input) {
+    util::stack_t< token_t > st;
+    postfix_expr_t postfix;
+
+    // start and end of postfix expr
+    std::string edited_input = std::string("(") + input + std::string(")");
+
+    const char 
+        *beg = edited_input.begin().base(),
+        *end = edited_input.end().base();
+    
+
+    token_t token;
+    while(beg != end) {
+        beg = impl.to_token(beg, end, token);
+        // put token into stack
+        // apply logic of token of emplacement
+        token.expr_push(postfix.expr, st);
+    }
+
+
+    // try to evaluate postfix expr
+    // if is executable, return it
+    postfix.evaluate();
+    // otherwise, throw exception
+    return postfix;
+}
+
 double postfix_expr_t::evaluate() {
     util::stack_t<double> val_st;
     for(int i = 0; i < expr.size(); ++i) {
-        expr[i]->process(val_st);
+        expr[i].calc_process(val_st);
     }
 
     if(val_st.size() != 1)

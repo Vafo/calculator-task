@@ -7,7 +7,12 @@
 #include <iterator>
 
 #include "token.h"
-#include "util/container.h"
+#include "token_concrete.h"
+#include "token_factory.h"
+#include "token_builder.h"
+
+#include "util/vector.h"
+#include "util/stack.h"
 #include "util/shared_ptr.h"
 
 namespace postfix
@@ -20,9 +25,12 @@ public:
 
     postfix_converter_impl_t(
         std::initializer_list<
-            util::shared_ptr<token_factory_base_t>
+            token_t
         > list
-    ): factories(list) {
+    ) {
+        std::transform(
+            list.begin(), list.end(),
+            std::back_inserter(factories), make_token_factory);
         std::sort(factories.begin(), factories.end(), compare_fact);
         std::transform(
             factories.begin(), factories.end(), 
@@ -34,12 +42,12 @@ public:
     to_token(
         const char *beg,
         const char *end,
-        util::shared_ptr<token_base_t> &out_token /*out*/
+        token_t& out_token /*out*/
     );
 
 private:
     util::vector_t< std::string > factory_names;
-    util::vector_t< util::shared_ptr<token_factory_base_t> > factories;
+    util::vector_t< token_factory > factories;
     
     // Minus sign is not supported. It is retrieved as separate operator
     const char *
@@ -49,22 +57,26 @@ private:
     to_operator(
         const char *beg,
         const char *end,
-        util::shared_ptr<token_base_t> &out_oper /*out*/
+        token_t &out_oper /*out*/
     );
 
     static bool compare_fact(
-        util::shared_ptr<token_factory_base_t>& a,
-        util::shared_ptr<token_factory_base_t>& b
+        token_factory& a,
+        token_factory& b
     ) {
-        return std::string(a->get_name()) < std::string(b->get_name());
+        return a.get_name() < b.get_name();
     }
 
-    static std::string get_factory_name( util::shared_ptr<token_factory_base_t> &fact) {
-        return std::string(fact->get_name());
+    static std::string get_factory_name(token_factory& fact) {
+        return fact.get_name();
+    }
+
+    static token_factory make_token_factory(const token_t& token) {
+        return token_factory(token);
     }
 
 #ifdef POSTFIX_TEST
-    template<class... Ts> friend class postfix_converter_impl_test;
+    friend class postfix_converter_impl_test;
 #endif
 
 };
@@ -80,9 +92,6 @@ private:
 
 } // namespace detail
 
-template<class... Ts>
-class postfix_converter_t;
-
 class postfix_expr_t {
 public:
     double evaluate();
@@ -90,29 +99,22 @@ public:
 private:
     postfix_expr_t() {}
 
-    util::vector_t< util::shared_ptr<token_base_t> > expr;
+    util::vector_t< token_t > expr;
 
-    template<class... Ts> friend class postfix_converter_t; 
+    friend class postfix_converter_t; 
 };
 
-template<class... Ts>
 class postfix_converter_t {
 public:
     // FIXME: a lot of repetition
     postfix_converter_t():
-    impl({
-            util::shared_ptr<token_factory_base_t> (
-                token_factory_t<token_left_parenthesis_t>()
-            ),
-            util::shared_ptr<token_factory_base_t> (
-                token_factory_t<token_right_parenthesis_t>()
-            ),
-            util::shared_ptr<token_factory_base_t> (
-                token_factory_t<token_comma_t>()
-            ),
-            util::shared_ptr<token_factory_base_t>(
-                token_factory_t<Ts>()
-            )...
+    impl({ /* initializer-list */
+        builder::left_parenthesis(),
+        builder::right_paranthesis(),
+        builder::comma(),
+        
+        builder::plus(),
+        builder::minus(),   
     }) { }
 
     postfix_expr_t
@@ -122,43 +124,6 @@ private:
     detail::postfix_converter_impl_t impl;
 
 };
-
-// -a + foo(b*c) * d
-// + *
-// a-bc*foo d*+
-// if 2 conseq operators, just push (??? not valid statement anymore?)
-
-template<class... Ts>
-postfix_expr_t
-postfix_converter_t<Ts...>::convert(const std::string& input) {
-    util::stack_t< util::shared_ptr<token_base_t> > st;
-    postfix_expr_t postfix;
-
-    // start and end of postfix expr
-    std::string edited_input = std::string("(") + input + std::string(")");
-
-    const char 
-        *beg = edited_input.begin().base(),
-        *end = edited_input.end().base();
-    
-
-    util::shared_ptr<token_base_t> token;
-    while(beg != end) {
-        beg = impl.to_token(beg, end, token);
-        // put token into stack
-        // apply logic of token of emplacement
-        token->expr_push_logic(postfix.expr, st);
-    }
-
-
-    // try to evaluate postfix expr
-    // if is executable, return it
-    postfix.evaluate();
-    // otherwise, throw exception
-    return postfix;
-}
-
-
 
 } // namespace postfix
 

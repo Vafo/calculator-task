@@ -7,14 +7,18 @@
 namespace postfix::detail {
 
 // Methods of postfix_converter_impl_t are private, thus friend class is used
-template<class... Ts>
+
 class postfix_converter_impl_test {
 public:
-    postfix_converter_impl_test(): impl({
-        util::shared_ptr<token_factory_base_t>(
-            token_factory_t<Ts>()
-        )...
-    }) {}
+    postfix_converter_impl_test(): 
+    impl({ /* initializer-list */
+        builder::left_parenthesis(),
+        builder::right_paranthesis(),
+        builder::comma(),
+        
+        builder::plus(),
+        builder::minus(),   
+    }) { }
 
     double test_number(std::string &in) {
         double res;
@@ -29,11 +33,16 @@ public:
         return impl.to_number(begin, end, res);
     }
 
-    const char *test_operator(const char* begin, const char *end, util::shared_ptr<token_base_t> &token/*out*/) {
+    const char *test_operator(
+        const char* begin, const char *end,
+        token_t& token/*out*/) {
         return impl.to_operator(begin, end, token);
     }
 
-    const char *test_token(const char* begin, const char *end, util::shared_ptr<token_base_t> &token/*out*/) {
+    const char *test_token(
+        const char* begin, const char *end,
+        token_t& token/*out*/
+    ) {
         return impl.to_token(begin, end, token);
     }
 
@@ -41,10 +50,7 @@ public:
 };
 
 TEST_CASE("postfix_converter_impl_t: to_number", "[postfix_converter_impl_t][normal]") {
-    postfix_converter_impl_test<
-        token_minus_t,
-        token_plus_t
-    > test;
+    postfix_converter_impl_test test;
     std::string val = "123.12";
     REQUIRE(123.12 == test.test_number(val));
     val = "234.0001";
@@ -85,17 +91,14 @@ TEST_CASE("postfix_converter_impl_t: to_number", "[postfix_converter_impl_t][nor
 }
 
 TEST_CASE("postfix_converter_impl_t: to_operator", "[postfix_converter_impl_t][normal]") {
-    postfix_converter_impl_test<
-        token_minus_t,
-        token_plus_t
-    > test;
+    postfix_converter_impl_test test;
 
     const char in_str[] = "123 + 321 - 5";
     size_t str_size = sizeof(in_str) - 1; // exclude \0 symbol
 
     const char *iter = in_str;
     const char *prev_iter;
-    util::shared_ptr<token_base_t> token;
+    token_t token;
 
     // iter points to invalid operator (number 123)
     REQUIRE_THROWS(test.test_operator(iter, in_str + str_size, token));
@@ -122,16 +125,13 @@ TEST_CASE("postfix_converter_impl_t: to_operator", "[postfix_converter_impl_t][n
 }
 
 TEST_CASE("postfix_converter_impl_t: to_token", "[postfix_converter_impl_t][normal]") {
-    postfix_converter_impl_test<
-        token_minus_t,
-        token_plus_t
-    > test;
+    postfix_converter_impl_test test;
 
     const char in_str[] = "123 + 321 - 5";
     size_t str_size = sizeof(in_str) - 1; // exclude \0 symbol
 
     const char *iter = in_str;
-    util::shared_ptr<token_base_t> token;
+    token_t token;
     // all tokens are valid
     while(iter != (in_str + str_size)) {
         REQUIRE_NOTHROW(iter = test.test_token(iter, in_str + str_size, token));
@@ -140,10 +140,7 @@ TEST_CASE("postfix_converter_impl_t: to_token", "[postfix_converter_impl_t][norm
 }
 
 TEST_CASE("postfix_converter_t: conversion", "[postfix_converter_t][normal]") {
-    postfix_converter_t<
-        token_minus_t,
-        token_plus_t
-    > converter;
+    postfix_converter_t converter;
 
     // Some working examples
 
@@ -152,6 +149,9 @@ TEST_CASE("postfix_converter_t: conversion", "[postfix_converter_t][normal]") {
 
     expr = converter.convert("3-5");
     REQUIRE(expr.evaluate() == -2);
+
+    postfix_expr_t exp2 = converter.convert("10 + (5 - 10) - (3 - 5)");
+    REQUIRE(exp2.evaluate() == (10 + (5 - 10) - (3 - 5)) );
 }
 
 
