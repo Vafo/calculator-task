@@ -27,10 +27,24 @@ public:
 
 class token_plus {
 public:
-
     static const std::string name;
     static const precedence_t prec = precedence_t::add_n_sub;
     static const num_operands_t num_operands = 2;
+};
+
+// Set of all actual functions performed by operations 
+class token_apply_functions {
+public:
+    /* General interface */
+    // args are presented in original order
+    // e.g. 1 + 2 -> args = {1, 2}
+    // double operator() (tokenT& token, util::vector_t<double> &args) {
+
+
+    // token_plus function
+    double operator() (token_plus& token, util::vector_t<double> &args) {
+        return args[0] + args[1];
+    }
 };
 
 // Strategies
@@ -93,19 +107,6 @@ inline void do_push_number_to_stack(
     util::stack_t<double> &st
 ) {
     st.push(token.number);
-}
-
-// Plus strategy
-inline void do_calc_plus(
-    token_plus& token,
-    util::stack_t<double> &st
-) {
-    if(st.size() < 2)
-        throw std::domain_error("token_plus: not enough operands");
-
-    double b = st.peek(); st.pop();
-    double a = st.peek(); st.pop();
-    st.push(a + b);
 }
 
 } // namespace token_strategies

@@ -220,6 +220,43 @@ inline void do_push_with_precedence(
 
 /* calc_process Strategies */
 
+template<typename tokenT>
+inline void do_calc_throw(
+    tokenT& token,
+    util::stack_t<double> &st
+) {
+    std::string err_msg = 
+        "do_calc_throw: the token " +
+        token.name +
+        " is not supposed to be in postfix expression to be calculated";
+    
+    throw std::logic_error(err_msg);
+}
+
+template<typename tokenT, typename OperatorFunction>
+inline void do_calc_apply(
+    tokenT& token,
+    util::stack_t<double> &st
+) {
+    if(st.size() < token.num_operands) {
+        std::string err_msg = 
+            "do_calc_apply: operator " +
+            token.name +
+            " does not have enough operands";
+
+        throw std::domain_error(err_msg);
+    }
+
+    // Collect all arguments, in original order
+    util::vector_t<double> func_args(token.num_operands);
+    for(int i = token.num_operands - 1; i >= 0; --i) {
+        func_args[i] = st.peek();
+        st.pop();
+    }
+    
+    OperatorFunction functor;
+    st.push(functor(token, func_args));
+}
 
 } // namespace token_strategies
 

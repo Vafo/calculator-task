@@ -20,7 +20,7 @@ token_t build_token_plus() {
     token_plus plus;
     token_t token(
         plus,
-        token_strategies::do_calc_plus,
+        token_strategies::do_calc_apply<token_plus, token_apply_functions>,
         token_strategies::do_push_with_precedence<token_plus>
     );
 
