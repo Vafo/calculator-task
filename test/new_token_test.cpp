@@ -27,6 +27,17 @@ token_t build_token_plus() {
     return token;
 }
 
+token_t build_token_minus() {
+    token_minus minus;
+    token_t token(
+        minus,
+        token_strategies::do_calc_apply<token_minus, token_apply_functions>,
+        token_strategies::do_push_with_precedence<token_minus>
+    );
+
+    return token;
+}
+
 TEST_CASE("new_token: creation of object", "[new_token]") {
     token_t token = build_token_number(50);
 }
@@ -40,10 +51,12 @@ TEST_CASE("new_token: direct calculation", "[new_token]") {
     token_t num1 = build_token_number(val1);
     token_t num2 = build_token_number(val2);
     token_t plus = build_token_plus();
+    
+    // stack required for postfix calculation
+    util::stack_t<double> st;
 
     SECTION("num1 + num2") {
         util::vector_t<token_t> tokens = {num1, num2, plus};
-        util::stack_t<double> st;
 
         for(int i = 0; i < tokens.size(); ++i)
             tokens[i].calc_process(st);
@@ -54,7 +67,6 @@ TEST_CASE("new_token: direct calculation", "[new_token]") {
     SECTION("num1 + num2 + num2") {
         // postifx notation: num1 num2 + num2 +
         util::vector_t<token_t> tokens = {num1, num2, plus, num2, plus};
-        util::stack_t<double> st;
 
         for(int i = 0; i < tokens.size(); ++i)
             tokens[i].calc_process(st);
@@ -62,6 +74,40 @@ TEST_CASE("new_token: direct calculation", "[new_token]") {
         REQUIRE(st.peek() == (val1 + val2 + val2));
     }
 
+}
+
+TEST_CASE("new_token: minus sign test", "[new_token]") {
+    const int
+        val1 = 412,
+        val2 = -432;
+
+    token_t num1 = build_token_number(val1);
+    token_t num2 = build_token_number(val2);
+
+    token_t plus = build_token_plus();
+    token_t minus = build_token_minus();
+
+    // stack required for postfix calculation
+    util::stack_t<double> st;
+
+    SECTION("num1 - num2") {
+        util::vector_t<token_t> tokens = {num1, num2, minus};
+        
+        for(int i = 0; i < tokens.size(); ++i)
+            tokens[i].calc_process(st);
+
+        REQUIRE(st.peek() == (val1 - val2));
+    }
+
+    SECTION("num1 - num2 + num2") {
+        // postfix expr: num1 num2 minus num2 plus
+        util::vector_t<token_t> tokens = {num1, num2, minus, num2, plus};
+        
+        for(int i = 0; i < tokens.size(); ++i)
+            tokens[i].calc_process(st);
+
+        REQUIRE(st.peek() == (val1 - val2 + val2));
+    }
 }
 
 } // namespace postfix

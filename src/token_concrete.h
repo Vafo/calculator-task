@@ -25,7 +25,35 @@ public:
     static const num_operands_t num_operands = 0;
 };
 
+class token_left_parenthesis {
+public:
+    static const std::string name;
+    static const precedence_t prec = precedence_t::left_parenthesis;
+    static const num_operands_t num_operands = 0;
+};
+
+class token_right_parenthesis {
+public:
+    static const std::string name;
+    static const precedence_t prec = precedence_t::right_paranthesis;
+    static const num_operands_t num_operands = 0;
+};
+
+class token_comma {
+public:
+    static const std::string name;
+    static const precedence_t prec = precedence_t::comma;
+    static const num_operands_t num_operands = 0;
+};
+
 class token_plus {
+public:
+    static const std::string name;
+    static const precedence_t prec = precedence_t::add_n_sub;
+    static const num_operands_t num_operands = 2;
+};
+
+class token_minus {
 public:
     static const std::string name;
     static const precedence_t prec = precedence_t::add_n_sub;
@@ -42,8 +70,13 @@ public:
 
 
     // token_plus function
-    double operator() (token_plus& token, util::vector_t<double> &args) {
+    double operator() (token_plus& token, util::vector_t<double>& args) {
         return args[0] + args[1];
+    }
+
+    // token_minus function
+    double operator() (token_minus& token, util::vector_t<double>& args) {
+        return args[0] - args[1];
     }
 };
 
