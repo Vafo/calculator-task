@@ -2,44 +2,12 @@
 
 #include "new_token.h"
 #include "token_concrete.h"
+#include "token_builder.h"
 
 namespace postfix {
 
-token_t build_token_number(double num) {
-    token_number tok_num(num);
-    token_t token(
-        tok_num,
-        token_strategies::do_push_number_to_stack,
-        token_strategies::do_push_itself_to_expr<token_number>
-    );
-
-    return token;
-}
-
-token_t build_token_plus() {
-    token_plus plus;
-    token_t token(
-        plus,
-        token_strategies::do_calc_apply<token_plus, token_apply_functions>,
-        token_strategies::do_push_with_precedence<token_plus>
-    );
-
-    return token;
-}
-
-token_t build_token_minus() {
-    token_minus minus;
-    token_t token(
-        minus,
-        token_strategies::do_calc_apply<token_minus, token_apply_functions>,
-        token_strategies::do_push_with_precedence<token_minus>
-    );
-
-    return token;
-}
-
 TEST_CASE("new_token: creation of object", "[new_token]") {
-    token_t token = build_token_number(50);
+    token_t token = builder::number(50);
 }
 
 
@@ -48,9 +16,9 @@ TEST_CASE("new_token: direct calculation", "[new_token]") {
         val1 = -5,
         val2 = 312;
 
-    token_t num1 = build_token_number(val1);
-    token_t num2 = build_token_number(val2);
-    token_t plus = build_token_plus();
+    token_t num1 = builder::number(val1);
+    token_t num2 = builder::number(val2);
+    token_t plus = builder::plus();
     
     // stack required for postfix calculation
     util::stack_t<double> st;
@@ -81,11 +49,11 @@ TEST_CASE("new_token: minus sign test", "[new_token]") {
         val1 = 412,
         val2 = -432;
 
-    token_t num1 = build_token_number(val1);
-    token_t num2 = build_token_number(val2);
+    token_t num1 = builder::number(val1);
+    token_t num2 = builder::number(val2);
 
-    token_t plus = build_token_plus();
-    token_t minus = build_token_minus();
+    token_t plus = builder::plus();
+    token_t minus = builder::minus();
 
     // stack required for postfix calculation
     util::stack_t<double> st;
