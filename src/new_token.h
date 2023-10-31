@@ -1,5 +1,5 @@
-#ifndef POSTFIX_TOKEN_H
-#define POSTFIX_TOKEN_H
+#ifndef NEW_POSTFIX_TOKEN_H
+#define NEW_POSTFIX_TOKEN_H
 
 #include <stdexcept>
 
@@ -120,6 +120,8 @@ private:
 class token_t {
 public:
 
+    token_t() {}
+
     template<
         typename tokenT,
         typename calc_process_strategy,
@@ -145,6 +147,14 @@ public:
     ):
         pimpl( other.pimpl->clone() )
     {}
+
+    token_t&
+    operator=(
+        const token_t& other
+    ) {
+        pimpl = std::move( other.pimpl->clone() );
+        return *this;
+    }
 
     void expr_push(
         util::vector_t<token_t> &expr,

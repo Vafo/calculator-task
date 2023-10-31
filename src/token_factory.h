@@ -9,7 +9,7 @@ namespace postfix {
 class token_factory {
 public:
 
-    token_factory(token_t& in_proto): 
+    token_factory(const token_t& in_proto): 
         prototype(in_proto)
     {}
 

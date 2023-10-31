@@ -3,7 +3,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Collect util tests
 add_subdirectory(util)
 # Collect src tests
-add_library(src_test OBJECT postfix_test.cpp new_token_test.cpp)
+add_library(src_test OBJECT new_postfix_test.cpp new_token_test.cpp)
 target_include_directories(src_test PUBLIC ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(src_test compiler_flags test_link)
 

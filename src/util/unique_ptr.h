@@ -29,6 +29,7 @@ public:
     template<typename D, typename D_Deleter>
     unique_ptr& operator=(unique_ptr<D, D_Deleter>&& other) {
         reset(other.release());
+        return *this;
     }
 
     ~unique_ptr() {
