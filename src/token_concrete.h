@@ -69,26 +69,6 @@ public:
 };
 
 
-/* Set of all actual functions performed by operations */ 
-class token_apply_functions {
-public:
-    /* General interface */
-    // args are presented in original order
-    // e.g. 1 + 2 -> args = {1, 2}
-    // double operator() (tokenT& token, util::vector_t<double> &args) {
-
-
-    // token_plus function
-    double operator() (token_plus& token, util::vector_t<double>& args) {
-        return args[0] + args[1];
-    }
-
-    // token_minus function
-    double operator() (token_minus& token, util::vector_t<double>& args) {
-        return args[0] - args[1];
-    }
-};
-
 /* Strategies */
 namespace token_strategies {
 
@@ -150,6 +130,28 @@ inline void do_push_number_to_stack(
 ) {
     st.push(token.number);
 }
+
+
+/* Set of all actual functions performed by operations */
+/* Used by do_calc_apply strategy */
+class token_apply_functions {
+public:
+    /* General interface */
+    // args are presented in original order
+    // e.g. 1 + 2 -> args = {1, 2}
+    // double operator() (tokenT& token, util::vector_t<double> &args) {
+
+
+    // token_plus function
+    double operator() (token_plus& token, util::vector_t<double>& args) {
+        return args[0] + args[1];
+    }
+
+    // token_minus function
+    double operator() (token_minus& token, util::vector_t<double>& args) {
+        return args[0] - args[1];
+    }
+};
 
 } // namespace token_strategies
 
