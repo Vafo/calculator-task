@@ -115,7 +115,8 @@ public:
         
         builder::plus(),
         builder::minus(),
-        builder::multiplication()
+        builder::multiplication(),
+        builder::division()
     }) { }
 
     postfix_expr_t

@@ -154,5 +154,15 @@ TEST_CASE("postfix_converter_t: conversion", "[postfix_converter_t][normal]") {
     REQUIRE(exp2.evaluate() == (10 + (5 - 10) - (3 - 5)) );
 }
 
+TEST_CASE("postfix_converter_t: multiplication/division", "[postfix_converter_t]") {
+    postfix_converter_t converter;
+    postfix_expr_t expr;
+
+    expr = converter.convert("5 * 3 - 1");
+    REQUIRE(expr.evaluate() == (5 * 3 - 1));
+
+    expr = converter.convert("(5 * 3 / 2) * (3 + 0 - 5) ");
+    REQUIRE(expr.evaluate() == ( (5 * ( (double) 3) / 2) * (3 + 0 - 5) ));
+}
 
 } // namespace postfix

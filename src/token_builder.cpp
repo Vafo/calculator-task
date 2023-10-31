@@ -78,7 +78,18 @@ token_t multiplication() {
         token_strategies::do_calc_apply<token_multiplication, token_apply_functions>,
         token_strategies::do_push_with_precedence<token_multiplication>
     );
-    
+
+    return token;
+}
+
+token_t division() {
+    token_division division;
+    token_t token(
+        division,
+        token_strategies::do_calc_apply<token_division, token_apply_functions>,
+        token_strategies::do_push_with_precedence<token_division>
+    );
+
     return token;
 }
 

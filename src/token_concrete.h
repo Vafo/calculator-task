@@ -75,6 +75,13 @@ public:
     static const num_operands_t num_operands = 2;
 };
 
+class token_division {
+public:
+    static const std::string name;
+    static const precedence_t prec = precedence_t::multiplication;
+    static const num_operands_t num_operands = 2;
+};
+
 /* Set of all actual functions performed by operations */ 
 class token_apply_functions {
 public:
@@ -96,6 +103,10 @@ public:
 
     double operator() (token_multiplication& token, util::vector_t<double>& args) {
         return args[0] * args[1];
+    }
+
+    double operator() (token_division& token, util::vector_t<double>& args) {
+        return args[0] / args[1];
     }
 };
 

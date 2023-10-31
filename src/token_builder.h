@@ -15,6 +15,7 @@ token_t comma();
 token_t plus();
 token_t minus();
 token_t multiplication();
+token_t division();
 
 } // namespace postfix::builder
 
