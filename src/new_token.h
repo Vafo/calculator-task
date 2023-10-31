@@ -21,6 +21,8 @@ typedef enum{
     function
 } precedence_t;
 
+typedef int num_operands_t;
+
 // forward declaration
 class token_t;
 
@@ -42,6 +44,8 @@ public:
 
     // get precedence of token
     virtual precedence_t get_precedence() = 0;
+
+    virtual num_operands_t get_num_operands() = 0;
 
     virtual 
     util::unique_ptr<token_concept_t> clone() const = 0;
@@ -94,6 +98,11 @@ public:
     precedence_t get_precedence() {
         // is there need for separate strategy??
         return token.prec;
+    }
+
+    num_operands_t get_num_operands() {
+        // num of operands of token (which maybe an operator)
+        return token.num_operands;
     }
 
     util::unique_ptr<token_concept_t> clone() const{

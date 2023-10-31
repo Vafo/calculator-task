@@ -22,6 +22,7 @@ public:
 
     static const std::string name;
     static const precedence_t prec = precedence_t::number;
+    static const num_operands_t num_operands = 0;
 };
 
 class token_plus {
@@ -29,6 +30,7 @@ public:
 
     static const std::string name;
     static const precedence_t prec = precedence_t::add_n_sub;
+    static const num_operands_t num_operands = 2;
 };
 
 // Strategies
