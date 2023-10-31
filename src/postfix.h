@@ -6,7 +6,7 @@
 
 #include <iterator>
 
-#include "new_token.h"
+#include "token.h"
 #include "token_concrete.h"
 #include "token_factory.h"
 #include "token_builder.h"

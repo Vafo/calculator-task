@@ -1,7 +1,7 @@
 #ifndef TOKEN_CONCRETE_H
 #define TOKEN_CONCRETE_H
 
-#include "new_token.h"
+#include "token.h"
 
 namespace postfix {
 

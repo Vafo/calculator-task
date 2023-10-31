@@ -1,7 +1,7 @@
 #ifndef TOKEN_FACTORY_H
 #define TOKEN_FACTORY_H
 
-#include "new_token.h"
+#include "token.h"
 
 namespace postfix {
 

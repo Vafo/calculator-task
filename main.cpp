@@ -5,8 +5,6 @@
 
 #include "postfix.h"
 
-#include "util/shared_ptr.h"
-
 
 int main(int argc, char *argv[]) {
 

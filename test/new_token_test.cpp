@@ -1,6 +1,6 @@
 #include "catch2/catch_all.hpp"
 
-#include "new_token.h"
+#include "token.h"
 #include "token_concrete.h"
 #include "token_builder.h"
 

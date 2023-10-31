@@ -1,7 +1,7 @@
 #ifndef TOKEN_BUILDER_H
 #define TOKEN_BUILDER_H
 
-#include "new_token.h"
+#include "token.h"
 #include "token_concrete.h"
 
 namespace postfix::builder {

@@ -1,5 +1,5 @@
-#ifndef NEW_POSTFIX_TOKEN_H
-#define NEW_POSTFIX_TOKEN_H
+#ifndef POSTFIX_TOKEN_H
+#define POSTFIX_TOKEN_H
 
 #include <stdexcept>
 
