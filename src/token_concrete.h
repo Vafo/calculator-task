@@ -14,6 +14,8 @@ namespace postfix {
 //     static const precedence_t prec;
 // }
 
+/* Operands */
+
 class token_number {
 public:
     double number;
@@ -24,6 +26,9 @@ public:
     static const precedence_t prec = precedence_t::number;
     static const num_operands_t num_operands = 0;
 };
+
+
+/* Grammar */
 
 class token_left_parenthesis {
 public:
@@ -46,6 +51,9 @@ public:
     static const num_operands_t num_operands = 0;
 };
 
+
+/* Operators */
+
 class token_plus {
 public:
     static const std::string name;
@@ -60,7 +68,8 @@ public:
     static const num_operands_t num_operands = 2;
 };
 
-// Set of all actual functions performed by operations 
+
+/* Set of all actual functions performed by operations */ 
 class token_apply_functions {
 public:
     /* General interface */
@@ -80,7 +89,7 @@ public:
     }
 };
 
-// Strategies
+/* Strategies */
 namespace token_strategies {
 
 /* expr_push_strategy template */
