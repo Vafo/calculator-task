@@ -114,6 +114,7 @@ public:
         builder::comma(),
         
         builder::plus(),
+        builder::plus_unary(),
         builder::minus(),
         builder::minus_unary(),
         builder::multiplication(),
