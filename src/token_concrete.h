@@ -25,6 +25,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::number;
     static const num_operands_t num_operands = 0;
+    static const util::vector_t<precedence_t> valid_prev_tokens;
 };
 
 
@@ -35,6 +36,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::left_parenthesis;
     static const num_operands_t num_operands = 0;
+    static const util::vector_t<precedence_t> valid_prev_tokens;
 };
 
 class token_right_parenthesis {
@@ -42,6 +44,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::right_paranthesis;
     static const num_operands_t num_operands = 0;
+    static const util::vector_t<precedence_t> valid_prev_tokens;
 };
 
 class token_comma {
@@ -49,6 +52,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::comma;
     static const num_operands_t num_operands = 0;
+    static const util::vector_t<precedence_t> valid_prev_tokens;
 };
 
 
@@ -59,6 +63,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::add_n_sub;
     static const num_operands_t num_operands = 2;
+    static const util::vector_t<precedence_t> valid_prev_tokens;
 };
 
 class token_minus {
@@ -66,6 +71,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::add_n_sub;
     static const num_operands_t num_operands = 2;
+    static const util::vector_t<precedence_t> valid_prev_tokens;
 };
 
 class token_multiplication {
@@ -73,6 +79,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::multiplication;
     static const num_operands_t num_operands = 2;
+    static const util::vector_t<precedence_t> valid_prev_tokens;
 };
 
 class token_division {
@@ -80,6 +87,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::multiplication;
     static const num_operands_t num_operands = 2;
+    static const util::vector_t<precedence_t> valid_prev_tokens;
 };
 
 /* Set of all actual functions performed by operations */ 

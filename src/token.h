@@ -43,9 +43,11 @@ public:
     virtual std::string get_name() = 0;
 
     // get precedence of token
-    virtual precedence_t get_precedence() = 0;
+    virtual precedence_t get_precedence() const = 0;
 
     virtual num_operands_t get_num_operands() = 0;
+
+    virtual util::vector_t<precedence_t> get_valid_prev_token_prec() = 0;
 
     virtual 
     util::unique_ptr<token_concept_t> clone() const = 0;
@@ -64,18 +66,21 @@ public:
 template<
     typename tokenT,
     typename calc_process_strategy,
-    typename expr_push_strategy>
+    typename expr_push_strategy,
+    typename get_valid_prev_token_strategy>
 class owning_token_model_t: public token_concept_t {
 public:
 
     explicit owning_token_model_t(
         tokenT in_token,
         calc_process_strategy in_calc_strat,
-        expr_push_strategy in_expr_push_strat
+        expr_push_strategy in_expr_push_strat,
+        get_valid_prev_token_strategy in_get_valid_strat
     ): 
         token( in_token ),
         calc_strat( in_calc_strat ),
-        expr_push_strat( in_expr_push_strat )
+        expr_push_strat( in_expr_push_strat ),
+        get_valid_prev_token_strat( in_get_valid_strat )
     {}
 
     void calc_process(util::stack_t<double> &st) { 
@@ -90,12 +95,16 @@ public:
         expr_push_strat(token, expr, st, this);
     }
 
+    util::vector_t<precedence_t> get_valid_prev_token_prec() {
+        return get_valid_prev_token_strat(token);
+    }
+
     std::string get_name() {
         // is there need for separate strategy??
         return token.name;
     }
 
-    precedence_t get_precedence() {
+    precedence_t get_precedence() const {
         // is there need for separate strategy??
         return token.prec;
     }
@@ -113,6 +122,7 @@ private:
     tokenT token;
     calc_process_strategy calc_strat;
     expr_push_strategy expr_push_strat;
+    get_valid_prev_token_strategy get_valid_prev_token_strat;
 };
 
 } // namespace detail
@@ -125,15 +135,22 @@ public:
     template<
         typename tokenT,
         typename calc_process_strategy,
-        typename expr_push_strategy>
+        typename expr_push_strategy,
+        typename get_valid_prev_token_strategy>
     token_t(
         tokenT token,
         calc_process_strategy calc_strat,
-        expr_push_strategy expr_strat
+        expr_push_strategy expr_strat,
+        get_valid_prev_token_strategy valid_place_strat
     ): pimpl(
         util::make_unique<
-            detail::owning_token_model_t<tokenT, calc_process_strategy, expr_push_strategy>
-        >( token, calc_strat, expr_strat)
+            detail::owning_token_model_t<
+                tokenT,
+                calc_process_strategy,
+                expr_push_strategy,
+                get_valid_prev_token_strategy
+            >
+        >( token, calc_strat, expr_strat, valid_place_strat )
     ) {}
 
     token_t(
@@ -167,14 +184,29 @@ public:
         pimpl->calc_process(st);
     }
 
+    util::vector_t<precedence_t> get_valid_prev_token_prec() {
+        return pimpl->get_valid_prev_token_prec();
+    }
+
     // get_name
     std::string get_name() {
         return pimpl->get_name();
     }
 
     // get_precedence
-    precedence_t get_precedence() {
+    precedence_t get_precedence() const{
         return pimpl->get_precedence();
+    }
+
+    bool is_valid_to_place_after(const token_t& before) {
+        util::vector_t<precedence_t> valid_prev = get_valid_prev_token_prec();
+        precedence_t prec = before.get_precedence();
+
+        for(int i = 0; i < valid_prev.size(); ++i)
+            if(valid_prev[i] == prec)
+                return true;
+
+        return false;
     }
 
 private:
@@ -266,6 +298,13 @@ inline void do_calc_apply(
     
     OperatorFunction functor;
     st.push(functor(token, func_args));
+}
+
+/* get_valid_prev_token Strategies */
+
+template<typename tokenT>
+util::vector_t<precedence_t> do_get_valid_prev_token(tokenT& token) {
+    return token.valid_prev_tokens;
 }
 
 } // namespace token_strategies

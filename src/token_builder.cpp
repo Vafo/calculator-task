@@ -7,7 +7,8 @@ token_t number(double num) {
     token_t token(
         tok_num,
         token_strategies::do_push_number_to_stack,
-        token_strategies::do_push_itself_to_expr<token_number>
+        token_strategies::do_push_itself_to_expr<token_number>,
+        token_strategies::do_get_valid_prev_token<token_number>
     );
 
     return token;
@@ -19,7 +20,8 @@ token_t left_parenthesis() {
     token_t token(
         left_par,
         token_strategies::do_calc_throw<left_par_t>,
-        token_strategies::do_push_itself_to_stack<left_par_t>
+        token_strategies::do_push_itself_to_stack<left_par_t>,
+        token_strategies::do_get_valid_prev_token<left_par_t>
     );
 
     return token;
@@ -31,7 +33,8 @@ token_t right_paranthesis() {
     token_t token(
         right_par,
         token_strategies::do_calc_throw<right_par_t>,
-        token_strategies::do_push_all_including_left_paren<right_par_t>
+        token_strategies::do_push_all_including_left_paren<right_par_t>,
+        token_strategies::do_get_valid_prev_token<right_par_t>
     );
 
     return token;
@@ -43,7 +46,8 @@ token_t comma() {
     token_t token(
         com,
         token_strategies::do_calc_throw<comma_t>,
-        token_strategies::do_push_all_until_left_paren<comma_t>
+        token_strategies::do_push_all_until_left_paren<comma_t>,
+        token_strategies::do_get_valid_prev_token<comma_t>
     );
 
     return token;
@@ -54,40 +58,47 @@ token_t plus() {
     token_t token(
         plus,
         token_strategies::do_calc_apply<token_plus, token_apply_functions>,
-        token_strategies::do_push_with_precedence<token_plus>
+        token_strategies::do_push_with_precedence<token_plus>,
+        token_strategies::do_get_valid_prev_token<token_plus>
     );
 
     return token;
 }
 
 token_t minus() {
-    token_minus minus;
+    using minus_t = token_minus;
+    minus_t minus;
     token_t token(
         minus,
-        token_strategies::do_calc_apply<token_minus, token_apply_functions>,
-        token_strategies::do_push_with_precedence<token_minus>
+        token_strategies::do_calc_apply<minus_t, token_apply_functions>,
+        token_strategies::do_push_with_precedence<minus_t>,
+        token_strategies::do_get_valid_prev_token<minus_t>
     );
 
     return token;
 }
 
 token_t multiplication() {
-    token_multiplication multi;
+    using multi_t = token_multiplication;
+    multi_t multi;
     token_t token(
         multi,
-        token_strategies::do_calc_apply<token_multiplication, token_apply_functions>,
-        token_strategies::do_push_with_precedence<token_multiplication>
+        token_strategies::do_calc_apply<multi_t, token_apply_functions>,
+        token_strategies::do_push_with_precedence<multi_t>,
+        token_strategies::do_get_valid_prev_token<multi_t>
     );
 
     return token;
 }
 
 token_t division() {
-    token_division division;
+    using div_t = token_division;
+    div_t division;
     token_t token(
         division,
-        token_strategies::do_calc_apply<token_division, token_apply_functions>,
-        token_strategies::do_push_with_precedence<token_division>
+        token_strategies::do_calc_apply<div_t, token_apply_functions>,
+        token_strategies::do_push_with_precedence<div_t>,
+        token_strategies::do_get_valid_prev_token<div_t>
     );
 
     return token;
