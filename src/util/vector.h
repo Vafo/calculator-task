@@ -124,6 +124,13 @@ public:
         m_size--;
     }
 
+    void clear() {
+        for(size_type i = 0; i < m_size; ++i)
+            allocator.destroy(&m_raw_ptr[i]);
+
+        m_size = 0;
+    }
+
     obj_ptr begin() {
         return m_raw_ptr;
     }
