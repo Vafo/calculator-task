@@ -78,6 +78,19 @@ token_t minus() {
     return token;
 }
 
+token_t minus_unary() {
+    using minus_un_t = token_minus_unary;
+    minus_un_t minus_un;
+    token_t token(
+        minus_un,
+        token_strategies::do_calc_apply<minus_un_t, token_apply_functions>,
+        token_strategies::do_push_with_precedence<minus_un_t>,
+        token_strategies::do_get_valid_prev_token<minus_un_t>
+    );
+
+    return token;
+}
+
 token_t multiplication() {
     using multi_t = token_multiplication;
     multi_t multi;

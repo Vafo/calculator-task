@@ -115,6 +115,7 @@ public:
         
         builder::plus(),
         builder::minus(),
+        builder::minus_unary(),
         builder::multiplication(),
         builder::division()
     }) { }

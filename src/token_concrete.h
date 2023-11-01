@@ -74,6 +74,14 @@ public:
     static const util::vector_t<precedence_t> valid_prev_tokens;
 };
 
+class token_minus_unary {
+public:
+    static const std::string name;
+    static const precedence_t prec = precedence_t::unary;
+    static const num_operands_t num_operands = 1;
+    static const util::vector_t<precedence_t> valid_prev_tokens;
+};
+
 class token_multiplication {
 public:
     static const std::string name;
@@ -107,6 +115,10 @@ public:
     // token_minus function
     double operator() (token_minus& token, util::vector_t<double>& args) {
         return args[0] - args[1];
+    }
+
+    double operator() (token_minus_unary& token, util::vector_t<double>& args) {
+        return -args[0];
     }
 
     double operator() (token_multiplication& token, util::vector_t<double>& args) {

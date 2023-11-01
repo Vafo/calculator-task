@@ -16,6 +16,7 @@ const std::string token_comma::name = ",";
 // Operators
 const std::string token_plus::name = "+";
 const std::string token_minus::name = "-";
+const std::string token_minus_unary::name = "-";
 const std::string token_multiplication::name = "*";
 const std::string token_division::name = "/";
 
@@ -67,6 +68,11 @@ const util::vector_t<precedence_t> token_minus::valid_prev_tokens = {
     precedence_t::number,
 
     precedence_t::right_paranthesis
+};
+
+const util::vector_t<precedence_t> token_minus_unary::valid_prev_tokens = {
+    precedence_t::left_parenthesis,
+    precedence_t::comma
 };
 
 const util::vector_t<precedence_t> token_multiplication::valid_prev_tokens = {
