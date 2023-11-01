@@ -40,9 +40,9 @@ public:
 
     const char *
     to_token(
-        const char *beg,
-        const char *end,
-        token_t& out_token /*out*/
+        const char* beg,
+        const char* end,
+        util::vector_t<token_t>& candidate_tokens /*out*/
     );
 
 private:
@@ -57,7 +57,7 @@ private:
     to_operator(
         const char *beg,
         const char *end,
-        token_t &out_oper /*out*/
+        util::vector_t<token_t>& candidate_tokens /*out*/
     );
 
     static bool compare_fact(

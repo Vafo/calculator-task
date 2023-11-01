@@ -35,15 +35,23 @@ public:
 
     const char *test_operator(
         const char* begin, const char *end,
-        token_t& token/*out*/) {
-        return impl.to_operator(begin, end, token);
+        token_t& token/*out*/
+    ) {
+        util::vector_t<token_t> candidates;
+        const char *iter = impl.to_operator(begin, end, candidates);
+        
+        token = candidates[0];
+        return iter;
     }
 
     const char *test_token(
         const char* begin, const char *end,
         token_t& token/*out*/
     ) {
-        return impl.to_token(begin, end, token);
+        util::vector_t<token_t> candidates;
+        const char *iter = impl.to_token(begin, end, candidates);
+        token = candidates[0];
+        return iter;
     }
 
     postfix_converter_impl_t impl;
@@ -136,7 +144,6 @@ TEST_CASE("postfix_converter_impl_t: to_token", "[postfix_converter_impl_t][norm
     while(iter != (in_str + str_size)) {
         REQUIRE_NOTHROW(iter = test.test_token(iter, in_str + str_size, token));
     }
-
 }
 
 TEST_CASE("postfix_converter_t: conversion", "[postfix_converter_t][normal]") {

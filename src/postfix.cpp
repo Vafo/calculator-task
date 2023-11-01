@@ -60,7 +60,7 @@ const char *
 postfix_converter_impl_t::to_operator(
     const char *beg,
     const char *end,
-    token_t& out_oper /*out*/
+    util::vector_t<token_t>& candidate_tokens /*out*/
 ) {
     assert(beg != NULL && end != NULL);
     if(beg == end)
@@ -70,6 +70,8 @@ postfix_converter_impl_t::to_operator(
         beg++;
 
     std::string op_name; // potential operation name
+    util::vector_t<token_t> found_candidate_tokens;
+    
     util::vector_t<int> candidates(factory_names.size()); // Ideal type would be unordered_set
     std::iota(candidates.begin(), candidates.end(), 0);
     int comp_val;
@@ -85,17 +87,31 @@ postfix_converter_impl_t::to_operator(
         ) {
             if( (comp_val = factory_names[*cand_beg].compare(op_name)) == 0 ) {
                 found_idx = *cand_beg;
-                out_oper = factories[found_idx].build();
-                // TODO:
-                //      push into candidates_of_same_name,
-                //      then loop for exact match of operands
-                return beg;
+                // push into candidates_of_same_name,
+                found_candidate_tokens.push_back( factories[found_idx].build() );
+                continue;
             }
             else if (comp_val < 0) {
                 candidates.erase(cand_beg);
                 --cand_beg;
             }
         }
+
+        if(!found_candidate_tokens.empty()) {
+            // Append candidates to *out* candidates
+            // TODO: 
+            // Should consider rewriting this code
+            // So it would start with preliminary candidates.clear()
+            // Thus, saving memory
+            std::copy(
+                found_candidate_tokens.begin(),
+                found_candidate_tokens.end(),
+                std::back_inserter(candidate_tokens)
+            );
+
+            return beg;
+        }
+            
     }
 
     // throw error, as no candidates were found
@@ -109,21 +125,19 @@ const char*
 postfix_converter_impl_t::to_token(
     const char* beg,
     const char* end,
-    token_t& out_token /*out*/
+    util::vector_t<token_t>& candidate_tokens /*out*/
 ) {
     const char *iter;
     double num;
 
     iter = to_number(beg, end, num);
     if(iter != beg) {
-        out_token = builder::number(num);
+        candidate_tokens.push_back(builder::number(num));
         return iter;
     }
 
-    token_t tmp_token;
-    iter = to_operator(beg, end, tmp_token);
+    iter = to_operator(beg, end, candidate_tokens);
     if(iter != beg) {
-        out_token = tmp_token;
         return iter;
     }
     
@@ -153,26 +167,72 @@ postfix_converter_t::convert(const std::string& input) {
         *end = edited_input.end().base();
     
 
-    token_t token;
+    util::vector_t<token_t> candidate_tokens;
+    bool is_found_valid_token;
+    // left_parenthesis can be placed after left_parenthesis
+    token_t prev_token = builder::left_parenthesis();
     while(beg != end) {
-        beg = impl.to_token(beg, end, token);
-        // put token into stack
-        // apply logic of token of emplacement
-        token.expr_push(postfix.expr, st);
+        // clear candidate tokens
+        candidate_tokens.clear();
+        beg = impl.to_token(beg, end, candidate_tokens);
+        
+
+        // std::cout << "Candidates: " << std::endl;
+        // for(int i = 0; i < candidate_tokens.size(); ++i)
+        //     std::cout << candidate_tokens[i].get_name() << std::endl;
+
+        // find appropriate token
+        is_found_valid_token = false;
+        for(int i = 0; i < candidate_tokens.size(); ++i) {
+            if(candidate_tokens[i].is_valid_to_place_after(prev_token)) {
+                is_found_valid_token = true;
+                // put token into stack
+                candidate_tokens[i].expr_push(postfix.expr, st);
+                // set prev_token for next iteration
+                prev_token = candidate_tokens[i];
+            }
+        }
+
+        if(!is_found_valid_token) { /*no valid token was found*/
+            std::string err_msg;
+            if(!candidate_tokens.empty()) {
+                err_msg = 
+                    "postfix_converter_t::convert: token " +
+                    candidate_tokens[0].get_name() + " cant be placed after "
+                    + prev_token.get_name();
+            } else {
+                err_msg = 
+                    "postfix_converter_t::convert: no candidate token was found";
+            }
+
+            throw std::logic_error(err_msg);
+        }
     }
 
-
-    // try to evaluate postfix expr
-    // if is executable, return it
-    postfix.evaluate();
-    // otherwise, throw exception
     return postfix;
 }
 
 double postfix_expr_t::evaluate() {
     util::stack_t<double> val_st;
+    
     for(int i = 0; i < expr.size(); ++i) {
+        
+        // {
+        //     util::stack_t<double> st_copy = val_st;
+        //     while(!st_copy.empty()) {
+        //         std::cout << st_copy.peek() << " "; st_copy.pop();
+        //     }
+        // }
+        
         expr[i].calc_process(val_st);
+        
+        // std::cout << std::endl << "OP " << expr[i].get_name() << std::endl;
+        // {
+        //     util::stack_t<double> st_copy = val_st;
+        //     while(!st_copy.empty()) {
+        //         std::cout << st_copy.peek() << " "; st_copy.pop();
+        //     }
+        // }
     }
 
     if(val_st.size() != 1)
