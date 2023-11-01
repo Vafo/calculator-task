@@ -172,4 +172,33 @@ TEST_CASE("postfix_converter_t: multiplication/division", "[postfix_converter_t]
     REQUIRE(expr.evaluate() == ( (5 * ( (double) 3) / 2) * (3 + 0 - 5) ));
 }
 
+TEST_CASE("postfix_converter_t: unary plus & minus", "[postfix_converter_t]") {
+    postfix_converter_t converter;
+    postfix_expr_t expr;
+
+    expr = converter.convert("-5 + 3 - 5");
+    REQUIRE(expr.evaluate() == ( -5 + 3 - 5 ));
+
+    REQUIRE_THROWS( expr = converter.convert("-5 * -2") );
+    REQUIRE_THROWS( expr = converter.convert("-5 * +2") );
+
+    expr = converter.convert("-5 * 3 - 5");
+    REQUIRE(expr.evaluate() == ( -5 * 3 - 5 ));
+
+    expr = converter.convert("-5 * (-3 - 5)");
+    REQUIRE(expr.evaluate() == ( -5 * (-3 - 5) ));
+
+    expr = converter.convert("-123");
+    REQUIRE(expr.evaluate() == ( -123 ));
+
+    expr = converter.convert("-(+123)");
+    REQUIRE(expr.evaluate() == ( -(+123) ));
+
+    expr = converter.convert("-(-123)");
+    REQUIRE(expr.evaluate() == ( -(-123) ));
+
+    expr = converter.convert("-(-123 + 21)");
+    REQUIRE(expr.evaluate() == ( -(-123 + 21) ));
+}
+
 } // namespace postfix
