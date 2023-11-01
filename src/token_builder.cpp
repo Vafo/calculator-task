@@ -130,4 +130,16 @@ token_t division() {
     return token;
 }
 
+token_t exp() {
+    using exp_t = token_exp;
+    exp_t exp;
+    token_t token(
+        exp,
+        token_strategies::do_calc_apply<exp_t, token_apply_functions>,
+        token_strategies::do_push_with_precedence<exp_t>,
+        token_strategies::do_get_valid_prev_token<exp_t>
+    );
+
+    return token;
+}
 } // namespace postfix::builder

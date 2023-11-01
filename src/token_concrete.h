@@ -3,6 +3,8 @@
 
 #include "token.h"
 
+#include <cmath>
+
 namespace postfix {
 
 // Tokens
@@ -106,6 +108,14 @@ public:
     static const util::vector_t<precedence_t> valid_prev_tokens;
 };
 
+class token_exp {
+public:
+    static const std::string name;
+    static const precedence_t prec = precedence_t::function;
+    static const num_operands_t num_operands = 2;
+    static const util::vector_t<precedence_t> valid_prev_tokens;
+};
+
 /* Set of all actual functions performed by operations */ 
 class token_apply_functions {
 public:
@@ -130,16 +140,24 @@ public:
         return args[0] - args[1];
     }
 
+    // token_minus_unary function
     double operator() (token_minus_unary& token, util::vector_t<double>& args) {
         return -args[0];
     }
 
+    // token_multiplication function
     double operator() (token_multiplication& token, util::vector_t<double>& args) {
         return args[0] * args[1];
     }
 
+    // token_division function
     double operator() (token_division& token, util::vector_t<double>& args) {
         return args[0] / args[1];
+    }
+
+    // token_exp function
+    double operator() (token_exp& token, util::vector_t<double>& args) {
+        return std::pow(args[0], args[1]);
     }
 };
 

@@ -21,6 +21,8 @@ const std::string token_minus_unary::name = "-";
 const std::string token_multiplication::name = "*";
 const std::string token_division::name = "/";
 
+const std::string token_exp::name = "exp";
+
 
 /* Valid previous tokens */
 
@@ -91,6 +93,15 @@ const util::vector_t<precedence_t> token_division::valid_prev_tokens = {
     precedence_t::number,
 
     precedence_t::right_paranthesis
+};
+
+const util::vector_t<precedence_t> token_exp::valid_prev_tokens = {
+    precedence_t::add_n_sub,
+    precedence_t::multiplication,
+    precedence_t::unary,
+    
+    precedence_t::left_parenthesis,
+    precedence_t::comma
 };
 
 } // namespace postfix

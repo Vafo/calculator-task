@@ -118,7 +118,9 @@ public:
         builder::minus(),
         builder::minus_unary(),
         builder::multiplication(),
-        builder::division()
+        builder::division(),
+
+        builder::exp()
     }) { }
 
     postfix_expr_t

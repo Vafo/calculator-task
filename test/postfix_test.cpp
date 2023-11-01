@@ -201,4 +201,27 @@ TEST_CASE("postfix_converter_t: unary plus & minus", "[postfix_converter_t]") {
     REQUIRE(expr.evaluate() == ( -(-123 + 21) ));
 }
 
+TEST_CASE("postfix_converter_t: exp function", "[postfix_converter_t]") {
+    postfix_converter_t converter;
+    postfix_expr_t expr;
+
+    expr = converter.convert("exp(2,3)");
+    REQUIRE(expr.evaluate() == (8));
+
+    expr = converter.convert("exp(2,0)");
+    REQUIRE(expr.evaluate() == (1));
+
+    expr = converter.convert("exp(1,3)");
+    REQUIRE(expr.evaluate() == (1));
+
+    expr = converter.convert("exp(5,3)");
+    REQUIRE(expr.evaluate() == (125));
+
+    expr = converter.convert("-exp(2,3)");
+    REQUIRE(expr.evaluate() == (-8));
+
+    expr = converter.convert("+exp(2,-1)");
+    REQUIRE(expr.evaluate() == (0.5));
+}
+
 } // namespace postfix

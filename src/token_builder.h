@@ -19,6 +19,8 @@ token_t minus_unary();
 token_t multiplication();
 token_t division();
 
+token_t exp();
+
 } // namespace postfix::builder
 
 #endif
