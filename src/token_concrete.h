@@ -1,6 +1,14 @@
 #ifndef TOKEN_CONCRETE_H
 #define TOKEN_CONCRETE_H
 
+/**
+ * Token Specializations
+ *      Token declarations
+ *      Token Strategies
+ *          Strategies
+ *          Functors
+*/
+
 #include "token.h"
 
 #include <cmath>
@@ -108,6 +116,8 @@ public:
     static const util::vector_t<precedence_t> valid_prev_tokens;
 };
 
+/* Functions */
+
 class token_exp {
 public:
     static const std::string name;
@@ -116,8 +126,75 @@ public:
     static const util::vector_t<precedence_t> valid_prev_tokens;
 };
 
+
+/* Strategies */
+namespace token_strategies {
+
+/* expr_push_strategy template */
+// Callable
+// void func_name(
+//     tokenT& token,
+//     util::vector_t<token_t> &expr,
+//     util::stack_t<token_t> &st,
+//     detail::token_concept_t *source_obj
+// )
+
+template<typename tokenT>
+inline void do_push_all_until_left_paren(
+    tokenT& token,
+    util::vector_t<token_t> &expr,
+    util::stack_t<token_t> &st,
+    detail::token_concept_t *source_obj
+) {
+    // retrieve precedence (properties) of token_t
+    while(!st.empty())
+        if(st.peek().get_name() != "(") {
+            expr.push_back(st.peek());
+            st.pop();
+        } else {
+            break;
+        }
+    
+    // if stack is empty or top token is not left parenthesis
+    if(st.empty() || st.peek().get_precedence() != precedence_t::left_parenthesis)
+        throw std::logic_error("token_right_parenthesis::expr_push_logic(): left parenthesis is missing");
+}
+
+template<typename tokenT>
+inline void do_push_all_including_left_paren(
+    tokenT& token,
+    util::vector_t<token_t> &expr,
+    util::stack_t<token_t> &st,
+    detail::token_concept_t *source_obj
+) {
+    do_push_all_until_left_paren(token, expr, st, source_obj);
+
+    // remove left parenthesis
+    st.pop();
+}
+
+
+/* calc_process_strategy template */
+// Callable
+// void func_name(
+//     tokenT& token,
+//     util::stack_t<double> &st
+// )
+
+// Number strategy
+inline void do_push_number_to_stack(
+    token_number& token,
+    util::stack_t<double> &st
+) {
+    st.push(token.number);
+}
+
+
+/* Functors */
+/* Used by Strategies */
+
 /* Set of all actual functions performed by operations */ 
-class token_calc_apply_functions {
+class calc_process_token_funcs {
 public:
     /* General interface */
     // args are presented in original order
@@ -193,67 +270,6 @@ public:
     }
 };
 
-/* Strategies */
-namespace token_strategies {
-
-/* expr_push_strategy template */
-// Callable
-// void func_name(
-//     tokenT& token,
-//     util::vector_t<token_t> &expr,
-//     util::stack_t<token_t> &st,
-//     detail::token_concept_t *source_obj
-// )
-
-template<typename tokenT>
-inline void do_push_all_until_left_paren(
-    tokenT& token,
-    util::vector_t<token_t> &expr,
-    util::stack_t<token_t> &st,
-    detail::token_concept_t *source_obj
-) {
-    // retrieve precedence (properties) of token_t
-    while(!st.empty())
-        if(st.peek().get_name() != "(") {
-            expr.push_back(st.peek());
-            st.pop();
-        } else {
-            break;
-        }
-    
-    // if stack is empty or top token is not left parenthesis
-    if(st.empty() || st.peek().get_precedence() != precedence_t::left_parenthesis)
-        throw std::logic_error("token_right_parenthesis::expr_push_logic(): left parenthesis is missing");
-}
-
-template<typename tokenT>
-inline void do_push_all_including_left_paren(
-    tokenT& token,
-    util::vector_t<token_t> &expr,
-    util::stack_t<token_t> &st,
-    detail::token_concept_t *source_obj
-) {
-    do_push_all_until_left_paren(token, expr, st, source_obj);
-
-    // remove left parenthesis
-    st.pop();
-}
-
-
-/* calc_process_strategy template */
-// Callable
-// void func_name(
-//     tokenT& token,
-//     util::stack_t<double> &st
-// )
-
-// Number strategy
-inline void do_push_number_to_stack(
-    token_number& token,
-    util::stack_t<double> &st
-) {
-    st.push(token.number);
-}
 
 } // namespace token_strategies
 
