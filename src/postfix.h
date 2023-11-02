@@ -39,7 +39,7 @@ public:
     }
 
     const char *
-    to_token(
+    get_token_candidates(
         const char* beg,
         const char* end,
         util::vector_t<token_t>& candidate_tokens /*out*/
@@ -81,14 +81,6 @@ private:
 
 };
 
-// Some idea on reducing code bloat
-// template<class... Ts>
-// util::shared_ptr<token_factory_base_t>
-// make_shared_factory_list[] = { 
-//         util::shared_ptr<token_factory_base_t> (
-//             token_factory_t<Ts>()
-//         )...
-// };
 
 } // namespace detail
 

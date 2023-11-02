@@ -117,7 +117,7 @@ public:
 };
 
 /* Set of all actual functions performed by operations */ 
-class token_apply_functions {
+class token_calc_apply_functions {
 public:
     /* General interface */
     // args are presented in original order
@@ -158,6 +158,38 @@ public:
     // token_exp function
     double operator() (token_exp& token, util::vector_t<double>& args) {
         return std::pow(args[0], args[1]);
+    }
+};
+
+class influence_ctx_token_grammar_funcs {
+public:
+    void operator() (token_left_parenthesis& token, token_conversion_ctx& ctx) {
+        ctx.parenthesis_commas.push(ctx.num_of_commas);
+        ctx.num_of_commas = 0;
+    }
+
+    void operator() (token_comma& token, token_conversion_ctx& ctx) {
+        --ctx.parenthesis_commas.peek();
+    }
+
+    void operator() (token_right_parenthesis& token, token_conversion_ctx& ctx) {
+        if(ctx.parenthesis_commas.size() == 0)
+            throw std::logic_error("there is no corresponding left parenthesis");
+
+        if(ctx.parenthesis_commas.peek() > 0)
+            throw std::logic_error("too much commas");
+        else if(ctx.parenthesis_commas.peek() < 0)
+            throw std::logic_error("not enough commas");
+
+        ctx.parenthesis_commas.pop();
+    }
+};
+
+class influence_ctx_token_func_funcs {
+public:
+    template<typename token_funcT>
+    void operator() (token_funcT& token, token_conversion_ctx& ctx) {
+        ctx.num_of_commas = token.num_operands - 1;
     }
 };
 

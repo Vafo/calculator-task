@@ -122,7 +122,7 @@ postfix_converter_impl_t::to_operator(
 }
 
 const char*
-postfix_converter_impl_t::to_token(
+postfix_converter_impl_t::get_token_candidates(
     const char* beg,
     const char* end,
     util::vector_t<token_t>& candidate_tokens /*out*/
@@ -144,6 +144,39 @@ postfix_converter_impl_t::to_token(
     std::string err_msg = "postfix_converter_impl_t: could not convert to token" + std::string(beg);
     throw std::runtime_error(err_msg);
     return NULL;
+}
+
+inline token_t prune_tokens(
+    token_t& prev_token,
+    util::vector_t<token_t>& candidate_tokens
+) {
+    token_t found_token;
+    // find appropriate token
+    bool is_found_valid_token = false;
+    for(int i = 0; i < candidate_tokens.size(); ++i) {
+        if(candidate_tokens[i].is_valid_to_place_after(prev_token)) {
+            is_found_valid_token = true;
+            // set found token
+            found_token = candidate_tokens[i];
+        }
+    }
+
+    if(!is_found_valid_token) { /*no valid token was found*/
+        std::string err_msg;
+        if(!candidate_tokens.empty()) {
+            err_msg = 
+                "postfix_converter_t::convert: token " +
+                candidate_tokens[0].get_name() + " cant be placed after "
+                + prev_token.get_name();
+        } else {
+            err_msg = 
+                "postfix_converter_t::convert: no candidate token was found";
+        }
+
+        throw std::logic_error(err_msg);
+    }
+
+    return found_token;
 }
 
 } // namespace detail
@@ -168,46 +201,29 @@ postfix_converter_t::convert(const std::string& input) {
     
 
     util::vector_t<token_t> candidate_tokens;
-    bool is_found_valid_token;
+    token_t cur_token;
+    token_conversion_ctx ctx;
+    
     // left_parenthesis can be placed after left_parenthesis
     token_t prev_token = builder::left_parenthesis();
     while(beg != end) {
-        // clear candidate tokens
+        // clear candidate tokens, thus reusing alloc mem
         candidate_tokens.clear();
-        beg = impl.to_token(beg, end, candidate_tokens);
+        beg = impl.get_token_candidates(beg, end, candidate_tokens); /*move beg ptr*/
         
+        cur_token = detail::prune_tokens(prev_token, candidate_tokens); /*prune tokens by prev_token*/
 
-        // std::cout << "Candidates: " << std::endl;
-        // for(int i = 0; i < candidate_tokens.size(); ++i)
-        //     std::cout << candidate_tokens[i].get_name() << std::endl;
-
-        // find appropriate token
-        is_found_valid_token = false;
-        for(int i = 0; i < candidate_tokens.size(); ++i) {
-            if(candidate_tokens[i].is_valid_to_place_after(prev_token)) {
-                is_found_valid_token = true;
-                // put token into stack
-                candidate_tokens[i].expr_push(postfix.expr, st);
-                // set prev_token for next iteration
-                prev_token = candidate_tokens[i];
-            }
-        }
-
-        if(!is_found_valid_token) { /*no valid token was found*/
-            std::string err_msg;
-            if(!candidate_tokens.empty()) {
-                err_msg = 
-                    "postfix_converter_t::convert: token " +
-                    candidate_tokens[0].get_name() + " cant be placed after "
-                    + prev_token.get_name();
-            } else {
-                err_msg = 
-                    "postfix_converter_t::convert: no candidate token was found";
-            }
-
-            throw std::logic_error(err_msg);
-        }
+        // apply token_specific_logic that affects context
+        cur_token.influence_ctx(ctx);
+        
+        // push into expr
+        cur_token.expr_push(postfix.expr, st);
+        prev_token = cur_token;
     }
+
+    // check if context is valid
+    if(!ctx.parenthesis_commas.empty())
+        throw std::logic_error("invalid parenthesis");
 
     return postfix;
 }

@@ -49,7 +49,7 @@ public:
         token_t& token/*out*/
     ) {
         util::vector_t<token_t> candidates;
-        const char *iter = impl.to_token(begin, end, candidates);
+        const char *iter = impl.get_token_candidates(begin, end, candidates);
         token = candidates[0];
         return iter;
     }
@@ -222,6 +222,37 @@ TEST_CASE("postfix_converter_t: exp function", "[postfix_converter_t]") {
 
     expr = converter.convert("+exp(2,-1)");
     REQUIRE(expr.evaluate() == (0.5));
+}
+
+TEST_CASE("postfix_converter_t: parenthesis and commas", "[postfix_converter_t]") {
+    postfix_converter_t converter;
+    postfix_expr_t expr;
+
+    // too much args
+    REQUIRE_THROWS(expr = converter.convert("exp(2,3,1)"));
+
+    // too less args
+    REQUIRE_THROWS(expr = converter.convert("exp(2)"));
+
+    // zero args
+    REQUIRE_THROWS(expr = converter.convert("exp()"));
+
+    // missing left parenthesis
+    REQUIRE_THROWS(expr = converter.convert("412 + 42)"));
+    REQUIRE_THROWS(expr = converter.convert("exp 32,1)"));
+    REQUIRE_THROWS(expr = converter.convert("(exp(2,3) + 5 * 4 + 5))"));
+
+    // missing right parenthesis
+    REQUIRE_THROWS(expr = converter.convert("exp(2,3"));
+    REQUIRE_THROWS(expr = converter.convert("(5"));
+    
+    // complex expr
+    REQUIRE_NOTHROW(expr = converter.convert("( (-5)*3 + (4 * (-3)) )"));
+    REQUIRE(expr.evaluate() == ( ( (-5)*3 + (4 * (-3)) ) ));
+
+    REQUIRE_THROWS(expr = converter.convert("( (-5)*3 + 4 * (-3)) )"));
+    REQUIRE_THROWS(expr = converter.convert("( (-5)*3 + (4 * (-3) )"));
+
 }
 
 } // namespace postfix

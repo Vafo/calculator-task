@@ -97,6 +97,19 @@ util::vector_t<precedence_t> do_get_valid_prev_token(tokenT& token) {
     return token.valid_prev_tokens;
 }
 
+/* influence_context Strategies */
+
+template<typename tokenT>
+inline void do_influence_ctx_nothing(tokenT& token, token_conversion_ctx& ctx) {
+    return; /*do nothing*/
+}
+
+template<typename tokenT, typename InfluenceFunction>
+inline void do_influence_ctx_apply(tokenT& token, token_conversion_ctx& ctx) {
+    InfluenceFunction functor;
+    functor(token, ctx);
+}
+
 } // namespace postfix::token_strategies
 
 
