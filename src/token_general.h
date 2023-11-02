@@ -40,7 +40,6 @@ public:
         util::stack_t<token_t> &st
     ) = 0;
 
-    // influence context of conversion of sequence of tokens
     virtual void influence_ctx(token_conversion_ctx& ctx) = 0;
 
     // get name of token
@@ -51,8 +50,6 @@ public:
 
     virtual num_operands_t get_num_operands() = 0;
 
-    // get vector of valid tokens' precedences
-    // which are valid to be placed before *this
     virtual util::vector_t<precedence_t> get_valid_prev_token_prec() = 0;
 
     virtual 
@@ -142,6 +139,7 @@ private:
 
 } // namespace detail
 
+// Type-erased token
 class token_t {
 public:
 
@@ -175,6 +173,7 @@ public:
         )
     ) {}
 
+    // Constructor for cloned token_concept_t
     token_t(
         util::unique_ptr<detail::token_concept_t> pimpl_in
     ):
@@ -206,10 +205,13 @@ public:
         pimpl->calc_process(st);
     }
 
+    // influence context of conversion of sequence of tokens
     void influence_ctx(token_conversion_ctx& ctx) {
         pimpl->influence_ctx(ctx);
     }
 
+    // get vector of valid tokens' precedences
+    // which are valid to be placed before *this
     util::vector_t<precedence_t> get_valid_prev_token_prec() {
         return pimpl->get_valid_prev_token_prec();
     }

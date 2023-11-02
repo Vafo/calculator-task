@@ -1,6 +1,10 @@
 #ifndef TOKEN_STRATEGIES_H
 #define TOKEN_STRATEGIES_H
 
+/**
+ * General Strategies, not tied to specific token
+*/
+
 #include "token_general.h"
 
 // Strategies
