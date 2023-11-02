@@ -39,10 +39,10 @@ public:
     }
 
     const char *
-    to_token(
-        const char *beg,
-        const char *end,
-        token_t& out_token /*out*/
+    get_token_candidates(
+        const char* beg,
+        const char* end,
+        util::vector_t<token_t>& candidate_tokens /*out*/
     );
 
 private:
@@ -57,7 +57,7 @@ private:
     to_operator(
         const char *beg,
         const char *end,
-        token_t &out_oper /*out*/
+        util::vector_t<token_t>& candidate_tokens /*out*/
     );
 
     static bool compare_fact(
@@ -81,23 +81,15 @@ private:
 
 };
 
-// Some idea on reducing code bloat
-// template<class... Ts>
-// util::shared_ptr<token_factory_base_t>
-// make_shared_factory_list[] = { 
-//         util::shared_ptr<token_factory_base_t> (
-//             token_factory_t<Ts>()
-//         )...
-// };
 
 } // namespace detail
 
 class postfix_expr_t {
 public:
-    double evaluate();
-
-private:
     postfix_expr_t() {}
+
+    double evaluate();
+private:
 
     util::vector_t< token_t > expr;
 
@@ -114,7 +106,13 @@ public:
         builder::comma(),
         
         builder::plus(),
-        builder::minus(),   
+        builder::plus_unary(),
+        builder::minus(),
+        builder::minus_unary(),
+        builder::multiplication(),
+        builder::division(),
+
+        builder::exp()
     }) { }
 
     postfix_expr_t

@@ -35,15 +35,23 @@ public:
 
     const char *test_operator(
         const char* begin, const char *end,
-        token_t& token/*out*/) {
-        return impl.to_operator(begin, end, token);
+        token_t& token/*out*/
+    ) {
+        util::vector_t<token_t> candidates;
+        const char *iter = impl.to_operator(begin, end, candidates);
+        
+        token = candidates[0];
+        return iter;
     }
 
     const char *test_token(
         const char* begin, const char *end,
         token_t& token/*out*/
     ) {
-        return impl.to_token(begin, end, token);
+        util::vector_t<token_t> candidates;
+        const char *iter = impl.get_token_candidates(begin, end, candidates);
+        token = candidates[0];
+        return iter;
     }
 
     postfix_converter_impl_t impl;
@@ -136,7 +144,6 @@ TEST_CASE("postfix_converter_impl_t: to_token", "[postfix_converter_impl_t][norm
     while(iter != (in_str + str_size)) {
         REQUIRE_NOTHROW(iter = test.test_token(iter, in_str + str_size, token));
     }
-
 }
 
 TEST_CASE("postfix_converter_t: conversion", "[postfix_converter_t][normal]") {
@@ -154,5 +161,98 @@ TEST_CASE("postfix_converter_t: conversion", "[postfix_converter_t][normal]") {
     REQUIRE(exp2.evaluate() == (10 + (5 - 10) - (3 - 5)) );
 }
 
+TEST_CASE("postfix_converter_t: multiplication/division", "[postfix_converter_t]") {
+    postfix_converter_t converter;
+    postfix_expr_t expr;
+
+    expr = converter.convert("5 * 3 - 1");
+    REQUIRE(expr.evaluate() == (5 * 3 - 1));
+
+    expr = converter.convert("(5 * 3 / 2) * (3 + 0 - 5) ");
+    REQUIRE(expr.evaluate() == ( (5 * ( (double) 3) / 2) * (3 + 0 - 5) ));
+}
+
+TEST_CASE("postfix_converter_t: unary plus & minus", "[postfix_converter_t]") {
+    postfix_converter_t converter;
+    postfix_expr_t expr;
+
+    expr = converter.convert("-5 + 3 - 5");
+    REQUIRE(expr.evaluate() == ( -5 + 3 - 5 ));
+
+    REQUIRE_THROWS( expr = converter.convert("-5 * -2") );
+    REQUIRE_THROWS( expr = converter.convert("-5 * +2") );
+
+    expr = converter.convert("-5 * 3 - 5");
+    REQUIRE(expr.evaluate() == ( -5 * 3 - 5 ));
+
+    expr = converter.convert("-5 * (-3 - 5)");
+    REQUIRE(expr.evaluate() == ( -5 * (-3 - 5) ));
+
+    expr = converter.convert("-123");
+    REQUIRE(expr.evaluate() == ( -123 ));
+
+    expr = converter.convert("-(+123)");
+    REQUIRE(expr.evaluate() == ( -(+123) ));
+
+    expr = converter.convert("-(-123)");
+    REQUIRE(expr.evaluate() == ( -(-123) ));
+
+    expr = converter.convert("-(-123 + 21)");
+    REQUIRE(expr.evaluate() == ( -(-123 + 21) ));
+}
+
+TEST_CASE("postfix_converter_t: exp function", "[postfix_converter_t]") {
+    postfix_converter_t converter;
+    postfix_expr_t expr;
+
+    expr = converter.convert("exp(2,3)");
+    REQUIRE(expr.evaluate() == (8));
+
+    expr = converter.convert("exp(2,0)");
+    REQUIRE(expr.evaluate() == (1));
+
+    expr = converter.convert("exp(1,3)");
+    REQUIRE(expr.evaluate() == (1));
+
+    expr = converter.convert("exp(5,3)");
+    REQUIRE(expr.evaluate() == (125));
+
+    expr = converter.convert("-exp(2,3)");
+    REQUIRE(expr.evaluate() == (-8));
+
+    expr = converter.convert("+exp(2,-1)");
+    REQUIRE(expr.evaluate() == (0.5));
+}
+
+TEST_CASE("postfix_converter_t: parenthesis and commas", "[postfix_converter_t]") {
+    postfix_converter_t converter;
+    postfix_expr_t expr;
+
+    // too much args
+    REQUIRE_THROWS(expr = converter.convert("exp(2,3,1)"));
+
+    // too less args
+    REQUIRE_THROWS(expr = converter.convert("exp(2)"));
+
+    // zero args
+    REQUIRE_THROWS(expr = converter.convert("exp()"));
+
+    // missing left parenthesis
+    REQUIRE_THROWS(expr = converter.convert("412 + 42)"));
+    REQUIRE_THROWS(expr = converter.convert("exp 32,1)"));
+    REQUIRE_THROWS(expr = converter.convert("(exp(2,3) + 5 * 4 + 5))"));
+
+    // missing right parenthesis
+    REQUIRE_THROWS(expr = converter.convert("exp(2,3"));
+    REQUIRE_THROWS(expr = converter.convert("(5"));
+    
+    // complex expr
+    REQUIRE_NOTHROW(expr = converter.convert("( (-5)*3 + (4 * (-3)) )"));
+    REQUIRE(expr.evaluate() == ( ( (-5)*3 + (4 * (-3)) ) ));
+
+    REQUIRE_THROWS(expr = converter.convert("( (-5)*3 + 4 * (-3)) )"));
+    REQUIRE_THROWS(expr = converter.convert("( (-5)*3 + (4 * (-3) )"));
+
+}
 
 } // namespace postfix
