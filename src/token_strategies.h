@@ -1,7 +1,7 @@
 #ifndef TOKEN_STRATEGIES_H
 #define TOKEN_STRATEGIES_H
 
-#include "token.h"
+#include "token_general.h"
 
 // Strategies
 namespace postfix::token_strategies {
