@@ -101,17 +101,18 @@ public:
     // FIXME: a lot of repetition
     postfix_converter_t():
     impl({ /* initializer-list */
+        /*grammar*/
         builder::left_parenthesis(),
         builder::right_paranthesis(),
         builder::comma(),
-        
+        /*operators*/
         builder::plus(),
         builder::plus_unary(),
         builder::minus(),
         builder::minus_unary(),
         builder::multiplication(),
         builder::division(),
-
+        /*functions*/
         builder::exp()
     }) { }
 

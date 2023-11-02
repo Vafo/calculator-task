@@ -40,6 +40,9 @@ public:
         util::vector_t<token_t> candidates;
         const char *iter = impl.to_operator(begin, end, candidates);
         
+        if(candidates.empty())
+            throw std::logic_error("no token found");
+
         token = candidates[0];
         return iter;
     }

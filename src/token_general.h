@@ -245,6 +245,10 @@ public:
     token_conversion_ctx():
         num_of_commas(0) {}
 
+    bool is_valid() {
+        return parenthesis_commas.empty();
+    }
+
     int num_of_commas;
     util::stack_t<int> parenthesis_commas; /*needed for check of parenthesis and commas*/
 };
