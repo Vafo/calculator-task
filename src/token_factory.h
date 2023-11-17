@@ -9,12 +9,12 @@ namespace postfix {
 class token_factory {
 public:
 
-    token_factory(const token_t& in_proto): 
+    token_factory(const token& in_proto): 
         prototype(in_proto)
     {}
 
-    token_t build() {
-        return token_t(prototype);
+    token build() {
+        return token(prototype);
     }
 
     std::string get_name() {
@@ -22,7 +22,7 @@ public:
     }
 
 private:
-    token_t prototype;
+    token prototype;
 };
 
 } // namespace postfix

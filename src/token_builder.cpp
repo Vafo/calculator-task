@@ -2,9 +2,9 @@
 
 namespace postfix::builder {
 
-token_t number(double num) {
+token number(double num) {
     token_number tok_num(num);
-    token_t token(
+    token tok(
         tok_num,
         token_strategies::do_push_number_to_stack,
         token_strategies::do_push_itself_to_expr<token_number>,
@@ -12,13 +12,13 @@ token_t number(double num) {
         token_strategies::do_influence_ctx_nothing<token_number>
     );
 
-    return token;
+    return tok;
 }
 
-token_t left_parenthesis() {
+token left_parenthesis() {
     using left_par_t = token_left_parenthesis;
     left_par_t left_par;
-    token_t token(
+    token tok(
         left_par,
         token_strategies::do_calc_throw<left_par_t>,
         token_strategies::do_push_itself_to_stack<left_par_t>,
@@ -29,13 +29,13 @@ token_t left_parenthesis() {
         >
     );
 
-    return token;
+    return tok;
 }
 
-token_t right_paranthesis() {
+token right_paranthesis() {
     using right_par_t = token_right_parenthesis;
     right_par_t right_par;
-    token_t token(
+    token tok(
         right_par,
         token_strategies::do_calc_throw<right_par_t>,
         token_strategies::do_push_all_including_left_paren<right_par_t>,
@@ -46,13 +46,13 @@ token_t right_paranthesis() {
         >
     );
 
-    return token;
+    return tok;
 }
 
-token_t comma() {
+token comma() {
     using comma_t = token_comma;
     comma_t com;
-    token_t token(
+    token tok(
         com,
         token_strategies::do_calc_throw<comma_t>,
         token_strategies::do_push_all_until_left_paren<comma_t>,
@@ -63,12 +63,12 @@ token_t comma() {
         >
     );
 
-    return token;
+    return tok;
 }
 
-token_t plus() {
+token plus() {
     token_plus plus;
-    token_t token(
+    token tok(
         plus,
         token_strategies::do_calc_apply<token_plus, token_strategies::calc_process_token_funcs>,
         token_strategies::do_push_with_precedence<token_plus>,
@@ -76,13 +76,13 @@ token_t plus() {
         token_strategies::do_influence_ctx_nothing<token_plus>
     );
 
-    return token;
+    return tok;
 }
 
-token_t plus_unary() {
+token plus_unary() {
     using plus_un_t = token_plus_unary;
     plus_un_t plus_un;
-    token_t token(
+    token tok(
         plus_un,
         token_strategies::do_calc_apply<plus_un_t, token_strategies::calc_process_token_funcs>,
         token_strategies::do_push_with_precedence<plus_un_t>,
@@ -90,13 +90,13 @@ token_t plus_unary() {
         token_strategies::do_influence_ctx_nothing<plus_un_t>
     );
 
-    return token;
+    return tok;
 }
 
-token_t minus() {
+token minus() {
     using minus_t = token_minus;
     minus_t minus;
-    token_t token(
+    token tok(
         minus,
         token_strategies::do_calc_apply<minus_t, token_strategies::calc_process_token_funcs>,
         token_strategies::do_push_with_precedence<minus_t>,
@@ -104,13 +104,13 @@ token_t minus() {
         token_strategies::do_influence_ctx_nothing<minus_t>
     );
 
-    return token;
+    return tok;
 }
 
-token_t minus_unary() {
+token minus_unary() {
     using minus_un_t = token_minus_unary;
     minus_un_t minus_un;
-    token_t token(
+    token tok(
         minus_un,
         token_strategies::do_calc_apply<minus_un_t, token_strategies::calc_process_token_funcs>,
         token_strategies::do_push_with_precedence<minus_un_t>,
@@ -118,13 +118,13 @@ token_t minus_unary() {
         token_strategies::do_influence_ctx_nothing<minus_un_t>
     );
 
-    return token;
+    return tok;
 }
 
-token_t multiplication() {
+token multiplication() {
     using multi_t = token_multiplication;
     multi_t multi;
-    token_t token(
+    token tok(
         multi,
         token_strategies::do_calc_apply<multi_t, token_strategies::calc_process_token_funcs>,
         token_strategies::do_push_with_precedence<multi_t>,
@@ -132,13 +132,13 @@ token_t multiplication() {
         token_strategies::do_influence_ctx_nothing<multi_t>
     );
 
-    return token;
+    return tok;
 }
 
-token_t division() {
+token division() {
     using div_t = token_division;
     div_t division;
-    token_t token(
+    token tok(
         division,
         token_strategies::do_calc_apply<div_t, token_strategies::calc_process_token_funcs>,
         token_strategies::do_push_with_precedence<div_t>,
@@ -146,13 +146,13 @@ token_t division() {
         token_strategies::do_influence_ctx_nothing<div_t>
     );
 
-    return token;
+    return tok;
 }
 
-token_t exp() {
+token exp() {
     using exp_t = token_exp;
     exp_t exp;
-    token_t token(
+    token tok(
         exp,
         token_strategies::do_calc_apply<exp_t, token_strategies::calc_process_token_funcs>,
         token_strategies::do_push_with_precedence<exp_t>,
@@ -163,6 +163,6 @@ token_t exp() {
         >
     );
 
-    return token;
+    return tok;
 }
 } // namespace postfix::builder

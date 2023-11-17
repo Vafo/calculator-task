@@ -27,81 +27,81 @@ const std::string token_exp::name = "exp";
 /* Valid previous tokens */
 
 // Operands
-const util::vector<precedence_t> token_number::valid_prev_tokens = {
-    precedence_t::add_n_sub,
-    precedence_t::multiplication,
-    precedence_t::unary,
+const util::vector<token_precedence> token_number::valid_prev_tokens = {
+    token_precedence::add_n_sub,
+    token_precedence::multiplication,
+    token_precedence::unary,
     
-    precedence_t::left_parenthesis,
-    precedence_t::comma
+    token_precedence::left_parenthesis,
+    token_precedence::comma
 };
 
 // Grammar
-const util::vector<precedence_t> token_left_parenthesis::valid_prev_tokens = {
-    precedence_t::add_n_sub,
-    precedence_t::multiplication,
-    precedence_t::unary,
-    precedence_t::function,
+const util::vector<token_precedence> token_left_parenthesis::valid_prev_tokens = {
+    token_precedence::add_n_sub,
+    token_precedence::multiplication,
+    token_precedence::unary,
+    token_precedence::function,
 
-    precedence_t::left_parenthesis,
-    precedence_t::comma
+    token_precedence::left_parenthesis,
+    token_precedence::comma
 };
 
-const util::vector<precedence_t> token_right_parenthesis::valid_prev_tokens = {
-    precedence_t::number,
+const util::vector<token_precedence> token_right_parenthesis::valid_prev_tokens = {
+    token_precedence::number,
 
-    precedence_t::left_parenthesis,
-    precedence_t::right_paranthesis
+    token_precedence::left_parenthesis,
+    token_precedence::right_paranthesis
 };
 
-const util::vector<precedence_t> token_comma::valid_prev_tokens = {
-    precedence_t::number,
+const util::vector<token_precedence> token_comma::valid_prev_tokens = {
+    token_precedence::number,
 
-    precedence_t::right_paranthesis
+    token_precedence::right_paranthesis
 };
 
 // Operators
-const util::vector<precedence_t> token_plus::valid_prev_tokens = {
-    precedence_t::number,
+const util::vector<token_precedence> token_plus::valid_prev_tokens = {
+    token_precedence::number,
 
-    precedence_t::right_paranthesis
+    token_precedence::right_paranthesis
 };
 
-const util::vector<precedence_t> token_plus_unary::valid_prev_tokens = {
-    precedence_t::left_parenthesis,
-    precedence_t::comma
+const util::vector<token_precedence> token_plus_unary::valid_prev_tokens = {
+    token_precedence::left_parenthesis,
+    token_precedence::comma
 };
 
-const util::vector<precedence_t> token_minus::valid_prev_tokens = {
-    precedence_t::number,
+const util::vector<token_precedence> token_minus::valid_prev_tokens = {
+    token_precedence::number,
 
-    precedence_t::right_paranthesis
+    token_precedence::right_paranthesis
 };
 
-const util::vector<precedence_t> token_minus_unary::valid_prev_tokens = {
-    precedence_t::left_parenthesis,
-    precedence_t::comma
+const util::vector<token_precedence> token_minus_unary::valid_prev_tokens = {
+    token_precedence::left_parenthesis,
+    token_precedence::comma
 };
 
-const util::vector<precedence_t> token_multiplication::valid_prev_tokens = {
-    precedence_t::number,
+const util::vector<token_precedence> token_multiplication::valid_prev_tokens = {
+    token_precedence::number,
 
-    precedence_t::right_paranthesis
+    token_precedence::right_paranthesis
 };
 
-const util::vector<precedence_t> token_division::valid_prev_tokens = {
-    precedence_t::number,
+const util::vector<token_precedence> token_division::valid_prev_tokens = {
+    token_precedence::number,
 
-    precedence_t::right_paranthesis
+    token_precedence::right_paranthesis
 };
 
-const util::vector<precedence_t> token_exp::valid_prev_tokens = {
-    precedence_t::add_n_sub,
-    precedence_t::multiplication,
-    precedence_t::unary,
+const util::vector<token_precedence> token_exp::valid_prev_tokens = {
+    token_precedence::add_n_sub,
+    token_precedence::multiplication,
+    token_precedence::unary,
     
-    precedence_t::left_parenthesis,
-    precedence_t::comma
+    token_precedence::left_parenthesis,
+    token_precedence::comma
 };
 
 } // namespace postfix

@@ -19,25 +19,25 @@ typedef enum{
     multiplication,
     unary,
     function
-} precedence_t;
+} token_precedence;
 
 typedef int num_operands_t;
 
 // forward declaration
-class token_t;
+class token;
 class token_conversion_ctx;
 
 namespace detail {
 
-class token_concept_t {
+class token_concept {
 public:
     // calc_process
     virtual void calc_process(util::stack<double> &st) = 0;
 
     // expr_push 
     virtual void expr_push(
-        util::vector<token_t> &expr,
-        util::stack<token_t> &st
+        util::vector<token> &expr,
+        util::stack<token> &st
     ) = 0;
 
     virtual void influence_ctx(token_conversion_ctx& ctx) = 0;
@@ -46,24 +46,24 @@ public:
     virtual std::string get_name() = 0;
 
     // get precedence of token
-    virtual precedence_t get_precedence() const = 0;
+    virtual token_precedence get_precedence() const = 0;
 
     virtual num_operands_t get_num_operands() = 0;
 
-    virtual util::vector<precedence_t> get_valid_prev_token_prec() = 0;
+    virtual util::vector<token_precedence> get_valid_prev_token_prec() = 0;
 
     virtual 
-    util::unique_ptr<token_concept_t> clone() const = 0;
+    util::unique_ptr<token_concept> clone() const = 0;
 
     // Virtual destructor, to avoid unique_ptr mem leak
-    virtual ~token_concept_t() {}
+    virtual ~token_concept() {}
 };
 
 /* Token Template */
 // class token_concrete {
 // public:
 //     static const std::string name;
-//     static const precedence_t prec;
+//     static const token_precedence prec;
 // }
 
 template<
@@ -72,7 +72,7 @@ template<
     typename expr_push_strategy,
     typename get_valid_prev_token_strategy,
     typename influence_context_strategy>
-class owning_token_model_t: public token_concept_t {
+class owning_token_model_t: public token_concept {
 public:
 
     explicit owning_token_model_t(
@@ -94,14 +94,14 @@ public:
     }
 
     void expr_push(
-        util::vector<token_t> &expr,
-        util::stack<token_t> &st
+        util::vector<token> &expr,
+        util::stack<token> &st
     ) {
         // expr_push_strategy requires info to build m_token object
         m_expr_push_strat(m_token, expr, st, this);
     }
 
-    util::vector<precedence_t> get_valid_prev_token_prec() {
+    util::vector<token_precedence> get_valid_prev_token_prec() {
         return m_get_valid_prev_token_strat(m_token);
     }
 
@@ -110,7 +110,7 @@ public:
         return m_token.name;
     }
 
-    precedence_t get_precedence() const {
+    token_precedence get_precedence() const {
         // is there need for separate strategy??
         return m_token.prec;
     }
@@ -124,7 +124,7 @@ public:
         m_influence_ctx_strat(m_token, ctx);
     }
 
-    util::unique_ptr<token_concept_t> clone() const{
+    util::unique_ptr<token_concept> clone() const{
         return util::make_unique<owning_token_model_t>( *this );
     }    
 
@@ -140,10 +140,10 @@ private:
 } // namespace detail
 
 // Type-erased token
-class token_t {
+class token {
 public:
 
-    token_t() {}
+    token() {}
 
     template<
         typename tokenT,
@@ -152,8 +152,8 @@ public:
         typename get_valid_prev_token_strategy,
         typename influence_context_strategy
     >
-    token_t(
-        tokenT token,
+    token(
+        tokenT tok,
         calc_process_strategy calc_strat,
         expr_push_strategy expr_strat,
         get_valid_prev_token_strategy valid_place_strat,
@@ -168,35 +168,35 @@ public:
                 influence_context_strategy
             >
         >( /*constructor*/
-            token, calc_strat, expr_strat,
+            tok, calc_strat, expr_strat,
             valid_place_strat, influence_ctx_strat
         )
     ) {}
 
-    // Constructor for cloned token_concept_t
-    token_t(
-        util::unique_ptr<detail::token_concept_t> pimpl_in
+    // Constructor for cloned token_concept
+    token(
+        util::unique_ptr<detail::token_concept> pimpl_in
     ):
         pimpl( std::move(pimpl_in) )
     {}
 
-    token_t(
-        const token_t& other
+    token(
+        const token& other
     ):
         pimpl( other.pimpl->clone() )
     {}
 
-    token_t&
+    token&
     operator=(
-        const token_t& other
+        const token& other
     ) {
         pimpl = std::move( other.pimpl->clone() );
         return *this;
     }
 
     void expr_push(
-        util::vector<token_t> &expr,
-        util::stack<token_t> &st
+        util::vector<token> &expr,
+        util::stack<token> &st
     ) {
         pimpl->expr_push(expr, st);
     }
@@ -212,7 +212,7 @@ public:
 
     // get vector of valid tokens' precedences
     // which are valid to be placed before *this
-    util::vector<precedence_t> get_valid_prev_token_prec() {
+    util::vector<token_precedence> get_valid_prev_token_prec() {
         return pimpl->get_valid_prev_token_prec();
     }
 
@@ -222,13 +222,13 @@ public:
     }
 
     // get_precedence
-    precedence_t get_precedence() const{
+    token_precedence get_precedence() const{
         return pimpl->get_precedence();
     }
 
-    bool is_valid_to_place_after(const token_t& before) {
-        util::vector<precedence_t> valid_prev = get_valid_prev_token_prec();
-        precedence_t prec = before.get_precedence();
+    bool is_valid_to_place_after(const token& before) {
+        util::vector<token_precedence> valid_prev = get_valid_prev_token_prec();
+        token_precedence prec = before.get_precedence();
 
         for(int i = 0; i < valid_prev.size(); ++i)
             if(valid_prev[i] == prec)
@@ -238,7 +238,7 @@ public:
     }
 
 private:
-    util::unique_ptr<detail::token_concept_t> pimpl;
+    util::unique_ptr<detail::token_concept> pimpl;
 };
 
 // Context of conversion of sequence of tokens

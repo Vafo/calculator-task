@@ -8,8 +8,8 @@
 
 int main(int argc, char *argv[]) {
 
-    postfix::postfix_converter_t converter;
-    postfix::postfix_expr_t expr;
+    postfix::postfix_converter converter;
+    postfix::postfix_expr expr;
     std::string in_str;
 
     std::cout << "Enter expressions" << std::endl;

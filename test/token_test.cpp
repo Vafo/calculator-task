@@ -7,7 +7,7 @@
 namespace postfix {
 
 TEST_CASE("new_token: creation of object", "[new_token]") {
-    token_t token = builder::number(50);
+    token token = builder::number(50);
 }
 
 
@@ -16,15 +16,15 @@ TEST_CASE("new_token: direct calculation", "[new_token]") {
         val1 = -5,
         val2 = 312;
 
-    token_t num1 = builder::number(val1);
-    token_t num2 = builder::number(val2);
-    token_t plus = builder::plus();
+    token num1 = builder::number(val1);
+    token num2 = builder::number(val2);
+    token plus = builder::plus();
     
     // stack required for postfix calculation
     util::stack<double> st;
 
     SECTION("num1 + num2") {
-        util::vector<token_t> tokens = {num1, num2, plus};
+        util::vector<token> tokens = {num1, num2, plus};
 
         for(int i = 0; i < tokens.size(); ++i)
             tokens[i].calc_process(st);
@@ -34,7 +34,7 @@ TEST_CASE("new_token: direct calculation", "[new_token]") {
 
     SECTION("num1 + num2 + num2") {
         // postifx notation: num1 num2 + num2 +
-        util::vector<token_t> tokens = {num1, num2, plus, num2, plus};
+        util::vector<token> tokens = {num1, num2, plus, num2, plus};
 
         for(int i = 0; i < tokens.size(); ++i)
             tokens[i].calc_process(st);
@@ -49,17 +49,17 @@ TEST_CASE("new_token: minus sign test", "[new_token]") {
         val1 = 412,
         val2 = -432;
 
-    token_t num1 = builder::number(val1);
-    token_t num2 = builder::number(val2);
+    token num1 = builder::number(val1);
+    token num2 = builder::number(val2);
 
-    token_t plus = builder::plus();
-    token_t minus = builder::minus();
+    token plus = builder::plus();
+    token minus = builder::minus();
 
     // stack required for postfix calculation
     util::stack<double> st;
 
     SECTION("num1 - num2") {
-        util::vector<token_t> tokens = {num1, num2, minus};
+        util::vector<token> tokens = {num1, num2, minus};
         
         for(int i = 0; i < tokens.size(); ++i)
             tokens[i].calc_process(st);
@@ -69,7 +69,7 @@ TEST_CASE("new_token: minus sign test", "[new_token]") {
 
     SECTION("num1 - num2 + num2") {
         // postfix expr: num1 num2 minus num2 plus
-        util::vector<token_t> tokens = {num1, num2, minus, num2, plus};
+        util::vector<token> tokens = {num1, num2, minus, num2, plus};
         
         for(int i = 0; i < tokens.size(); ++i)
             tokens[i].calc_process(st);

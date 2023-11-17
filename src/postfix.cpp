@@ -17,7 +17,7 @@ namespace postfix {
 namespace detail {
 
 const char *
-postfix_converter_impl_t::to_number(const char *beg, const char *end, double &out_val /*out*/) {
+postfix_converter_impl::to_number(const char *beg, const char *end, double &out_val /*out*/) {
     const char *cur_ptr = beg;
 
     while(cur_ptr != end && isspace(*cur_ptr))
@@ -57,10 +57,10 @@ postfix_converter_impl_t::to_number(const char *beg, const char *end, double &ou
 }
 
 const char *
-postfix_converter_impl_t::to_operator(
+postfix_converter_impl::to_operator(
     const char *beg,
     const char *end,
-    util::vector<token_t>& candidate_tokens /*out*/
+    util::vector<token>& candidate_tokens /*out*/
 ) {
     assert(beg != NULL && end != NULL);
     if(beg == end)
@@ -70,7 +70,7 @@ postfix_converter_impl_t::to_operator(
         beg++;
 
     std::string op_name; // potential operation name
-    util::vector<token_t> found_candidate_tokens;
+    util::vector<token> found_candidate_tokens;
     
     util::vector<int> candidates(factory_names.size()); // Ideal type would be unordered_set
     std::iota(candidates.begin(), candidates.end(), 0);
@@ -126,10 +126,10 @@ postfix_converter_impl_t::to_operator(
 }
 
 const char*
-postfix_converter_impl_t::get_token_candidates(
+postfix_converter_impl::get_token_candidates(
     const char* beg,
     const char* end,
-    util::vector<token_t>& candidate_tokens /*out*/
+    util::vector<token>& candidate_tokens /*out*/
 ) {
     const char *iter;
     double num;
@@ -147,17 +147,17 @@ postfix_converter_impl_t::get_token_candidates(
     }
 
     // It is not one of the operators
-    std::string err_msg = "postfix_converter_impl_t: could not convert to token" + std::string(beg);
+    std::string err_msg = "postfix_converter_impl: could not convert to token" + std::string(beg);
     throw std::runtime_error(err_msg);
     return NULL;
 }
 
-// Find token, such that it matches with previous token
-inline token_t prune_tokens(
-    token_t& prev_token,
-    util::vector<token_t>& candidate_tokens
+// Find tok, such that it matches with previous token
+inline token prune_tokens(
+    token& prev_token,
+    util::vector<token>& candidate_tokens
 ) {
-    token_t found_token;
+    token found_token;
     // find appropriate token among candidates
     bool is_found_valid_token = false;
     for(int i = 0; i < candidate_tokens.size(); ++i) {
@@ -172,12 +172,12 @@ inline token_t prune_tokens(
         std::string err_msg;
         if(!candidate_tokens.empty()) { /*none of them fits after prev_token*/
             err_msg = 
-                "postfix_converter_t::convert: token " +
+                "postfix_converter::convert: token " +
                 candidate_tokens[0].get_name() + " cant be placed after "
                 + prev_token.get_name();
         } else {
             err_msg = 
-                "postfix_converter_t::convert: no candidate token was found";
+                "postfix_converter::convert: no candidate token was found";
         }
 
         throw std::logic_error(err_msg);
@@ -194,10 +194,10 @@ inline token_t prune_tokens(
 // a-bc*foo d*+
 // if 2 conseq operators, just push (??? not valid statement anymore?)
 
-postfix_expr_t
-postfix_converter_t::convert(const std::string& input) {
-    util::stack< token_t > st;
-    postfix_expr_t postfix;
+postfix_expr
+postfix_converter::convert(const std::string& input) {
+    util::stack< token > st;
+    postfix_expr postfix;
 
     // start and end of postfix expr
     std::string edited_input = std::string("(") + input + std::string(")");
@@ -207,12 +207,12 @@ postfix_converter_t::convert(const std::string& input) {
         *end = edited_input.end().base();
     
 
-    util::vector<token_t> candidate_tokens;
-    token_t cur_token;
+    util::vector<token> candidate_tokens;
+    token cur_token;
     token_conversion_ctx ctx;
     
     // left_parenthesis can be placed after left_parenthesis
-    token_t prev_token = builder::left_parenthesis();
+    token prev_token = builder::left_parenthesis();
     while(beg != end) {
         // clear candidate tokens, thus reusing alloc mem
         candidate_tokens.clear();
@@ -235,7 +235,7 @@ postfix_converter_t::convert(const std::string& input) {
     return postfix;
 }
 
-double postfix_expr_t::evaluate() {
+double postfix_expr::evaluate() {
     util::stack<double> val_st;
     
     for(int i = 0; i < expr.size(); ++i)
@@ -243,7 +243,7 @@ double postfix_expr_t::evaluate() {
 
     // See if it calculated properly
     if(val_st.size() != 1)
-        throw std::logic_error("postfix_expr_t::evaluate(): could not evaluate expression");
+        throw std::logic_error("postfix_expr::evaluate(): could not evaluate expression");
 
     return val_st.peek();
 }

@@ -6,20 +6,20 @@
 
 namespace postfix::builder {
 
-token_t number(double num);
+token number(double num);
 
-token_t left_parenthesis();
-token_t right_paranthesis();
-token_t comma();
+token left_parenthesis();
+token right_paranthesis();
+token comma();
 
-token_t plus();
-token_t plus_unary();
-token_t minus();
-token_t minus_unary();
-token_t multiplication();
-token_t division();
+token plus();
+token plus_unary();
+token minus();
+token minus_unary();
+token multiplication();
+token division();
 
-token_t exp();
+token exp();
 
 } // namespace postfix::builder
 

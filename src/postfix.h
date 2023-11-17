@@ -20,12 +20,12 @@ namespace postfix
 
 namespace detail {
 
-class postfix_converter_impl_t {
+class postfix_converter_impl {
 public:
 
-    postfix_converter_impl_t(
+    postfix_converter_impl(
         std::initializer_list<
-            token_t
+            token
         > list
     ) {
         std::transform(
@@ -42,7 +42,7 @@ public:
     get_token_candidates(
         const char* beg,
         const char* end,
-        util::vector<token_t>& candidate_tokens /*out*/
+        util::vector<token>& candidate_tokens /*out*/
     );
 
 private:
@@ -57,7 +57,7 @@ private:
     to_operator(
         const char *beg,
         const char *end,
-        util::vector<token_t>& candidate_tokens /*out*/
+        util::vector<token>& candidate_tokens /*out*/
     );
 
     static bool compare_fact(
@@ -71,8 +71,8 @@ private:
         return fact.get_name();
     }
 
-    static token_factory make_token_factory(const token_t& token) {
-        return token_factory(token);
+    static token_factory make_token_factory(const token& tok) {
+        return token_factory(tok);
     }
 
 #ifdef POSTFIX_TEST
@@ -84,22 +84,22 @@ private:
 
 } // namespace detail
 
-class postfix_expr_t {
+class postfix_expr {
 public:
-    postfix_expr_t() {}
+    postfix_expr() {}
 
     double evaluate();
 private:
 
-    util::vector< token_t > expr;
+    util::vector< token > expr;
 
-    friend class postfix_converter_t; 
+    friend class postfix_converter; 
 };
 
-class postfix_converter_t {
+class postfix_converter {
 public:
     // FIXME: a lot of repetition
-    postfix_converter_t():
+    postfix_converter():
     impl({ /* initializer-list */
         /*grammar*/
         builder::left_parenthesis(),
@@ -116,11 +116,11 @@ public:
         builder::exp()
     }) { }
 
-    postfix_expr_t
+    postfix_expr
     convert(const std::string& input);
 
 private:
-    detail::postfix_converter_impl_t impl;
+    detail::postfix_converter_impl impl;
 
 };
 
