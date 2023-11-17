@@ -1,9 +1,11 @@
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_library(calculator_impl postfix.cpp token_concrete.cpp token_builder.cpp)
+add_subdirectory(util)
+add_subdirectory(containers)
+add_subdirectory(smart_pointers)
+add_subdirectory(postfix_calculator)
 
-target_include_directories(calculator_impl PUBLIC util)
-target_include_directories(calculator_impl PUBLIC .)
+add_library(src_impl INTERFACE)
 
-target_link_libraries(calculator_impl compiler_flags)
+target_link_libraries(src_impl INTERFACE postfix_calculator_impl smart_pointers_int containers_int util_int)
+target_link_libraries(src_impl INTERFACE compiler_flags)
