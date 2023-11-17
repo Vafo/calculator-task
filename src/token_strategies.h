@@ -16,7 +16,7 @@ template<typename tokenT>
 inline void do_push_itself_to_stack(
     tokenT& token,
     util::vector<token_t> &expr,
-    util::stack_t<token_t> &st,
+    util::stack<token_t> &st,
     detail::token_concept_t *source_obj
 ) {
     token_t token_obj(source_obj->clone());
@@ -27,7 +27,7 @@ template<typename tokenT>
 inline void do_push_itself_to_expr(
     tokenT& token,
     util::vector<token_t> &expr,
-    util::stack_t<token_t> &st,
+    util::stack<token_t> &st,
     detail::token_concept_t *source_obj
 ) {
     token_t token_obj(source_obj->clone());
@@ -38,7 +38,7 @@ template<typename tokenT>
 inline void do_push_with_precedence(
     tokenT& token,
     util::vector<token_t> &expr,
-    util::stack_t<token_t> &st,
+    util::stack<token_t> &st,
     detail::token_concept_t *source_obj
 ) {
     precedence_t prec = token.prec;
@@ -59,7 +59,7 @@ inline void do_push_with_precedence(
 template<typename tokenT>
 inline void do_calc_throw(
     tokenT& token,
-    util::stack_t<double> &st
+    util::stack<double> &st
 ) {
     std::string err_msg = 
         "do_calc_throw: the token " +
@@ -72,7 +72,7 @@ inline void do_calc_throw(
 template<typename tokenT, typename OperatorFunction>
 inline void do_calc_apply(
     tokenT& token,
-    util::stack_t<double> &st
+    util::stack<double> &st
 ) {
     if(st.size() < token.num_operands) {
         std::string err_msg = 

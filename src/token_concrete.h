@@ -135,7 +135,7 @@ namespace token_strategies {
 // void func_name(
 //     tokenT& token,
 //     util::vector<token_t> &expr,
-//     util::stack_t<token_t> &st,
+//     util::stack<token_t> &st,
 //     detail::token_concept_t *source_obj
 // )
 
@@ -143,7 +143,7 @@ template<typename tokenT>
 inline void do_push_all_until_left_paren(
     tokenT& token,
     util::vector<token_t> &expr,
-    util::stack_t<token_t> &st,
+    util::stack<token_t> &st,
     detail::token_concept_t *source_obj
 ) {
     // retrieve precedence (properties) of token_t
@@ -164,7 +164,7 @@ template<typename tokenT>
 inline void do_push_all_including_left_paren(
     tokenT& token,
     util::vector<token_t> &expr,
-    util::stack_t<token_t> &st,
+    util::stack<token_t> &st,
     detail::token_concept_t *source_obj
 ) {
     do_push_all_until_left_paren(token, expr, st, source_obj);
@@ -178,13 +178,13 @@ inline void do_push_all_including_left_paren(
 // Callable
 // void func_name(
 //     tokenT& token,
-//     util::stack_t<double> &st
+//     util::stack<double> &st
 // )
 
 // Number strategy
 inline void do_push_number_to_stack(
     token_number& token,
-    util::stack_t<double> &st
+    util::stack<double> &st
 ) {
     st.push(token.number);
 }

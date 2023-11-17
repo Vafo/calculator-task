@@ -21,7 +21,7 @@ TEST_CASE("new_token: direct calculation", "[new_token]") {
     token_t plus = builder::plus();
     
     // stack required for postfix calculation
-    util::stack_t<double> st;
+    util::stack<double> st;
 
     SECTION("num1 + num2") {
         util::vector<token_t> tokens = {num1, num2, plus};
@@ -56,7 +56,7 @@ TEST_CASE("new_token: minus sign test", "[new_token]") {
     token_t minus = builder::minus();
 
     // stack required for postfix calculation
-    util::stack_t<double> st;
+    util::stack<double> st;
 
     SECTION("num1 - num2") {
         util::vector<token_t> tokens = {num1, num2, minus};

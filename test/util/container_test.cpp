@@ -158,10 +158,10 @@ TEST_CASE("vector: erase", "[vector][normal]") {
 
 }
 
-TEST_CASE("stack_t: check LIFO", "[stack_t][normal]") {
+TEST_CASE("stack: check LIFO", "[stack][normal]") {
     char text[] = "abcdefg";
     int text_len = sizeof(text)/sizeof(text[0]);
-    stack_t<char> st;
+    stack<char> st;
 
     for(int i = 0; i < text_len; ++i)
         st.push(text[i]);
@@ -173,34 +173,34 @@ TEST_CASE("stack_t: check LIFO", "[stack_t][normal]") {
 
 }
 
-TEST_CASE("stack_t: constructor & assignment", "[stack_t][normal]") {
-    stack_t<int> st = {0, 1, 2, 3};
+TEST_CASE("stack: constructor & assignment", "[stack][normal]") {
+    stack<int> st = {0, 1, 2, 3};
     
     SECTION("copy constructor") {
-        stack_t<int> st2(st);
+        stack<int> st2(st);
         REQUIRE(st == st2);
     }
 
     SECTION("assignment operator") {
-        stack_t<int> st2;
+        stack<int> st2;
         REQUIRE_FALSE(st == st2);
         st2 = st;
         REQUIRE(st == st2);
     }
 
     SECTION("assignment operator 2") {
-        stack_t<int> st2 = {1, 2, 3};
+        stack<int> st2 = {1, 2, 3};
         REQUIRE_FALSE(st == st2);
         st2 = st;
         REQUIRE(st == st2);
     }
 }
 
-TEST_CASE("stack_t: assignment operator", "[stack_t][normal][assignment]") {
+TEST_CASE("stack: assignment operator", "[stack][normal][assignment]") {
     const int iterations = 10;
-    stack_t<int> st = {1, 2, 3, 4};
+    stack<int> st = {1, 2, 3, 4};
 
-    stack_t<int> st_copy;
+    stack<int> st_copy;
     for(int i = 0; i < iterations; ++i) {
         st.push(i);
         st_copy = st;

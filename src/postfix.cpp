@@ -196,7 +196,7 @@ inline token_t prune_tokens(
 
 postfix_expr_t
 postfix_converter_t::convert(const std::string& input) {
-    util::stack_t< token_t > st;
+    util::stack< token_t > st;
     postfix_expr_t postfix;
 
     // start and end of postfix expr
@@ -236,7 +236,7 @@ postfix_converter_t::convert(const std::string& input) {
 }
 
 double postfix_expr_t::evaluate() {
-    util::stack_t<double> val_st;
+    util::stack<double> val_st;
     
     for(int i = 0; i < expr.size(); ++i)
         expr[i].calc_process(val_st);

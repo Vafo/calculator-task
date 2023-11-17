@@ -32,12 +32,12 @@ namespace detail {
 class token_concept_t {
 public:
     // calc_process
-    virtual void calc_process(util::stack_t<double> &st) = 0;
+    virtual void calc_process(util::stack<double> &st) = 0;
 
     // expr_push 
     virtual void expr_push(
         util::vector<token_t> &expr,
-        util::stack_t<token_t> &st
+        util::stack<token_t> &st
     ) = 0;
 
     virtual void influence_ctx(token_conversion_ctx& ctx) = 0;
@@ -89,13 +89,13 @@ public:
         m_influence_ctx_strat( in_influence_ctx_strat )
     {}
 
-    void calc_process(util::stack_t<double> &st) { 
+    void calc_process(util::stack<double> &st) { 
         m_calc_strat(m_token, st);
     }
 
     void expr_push(
         util::vector<token_t> &expr,
-        util::stack_t<token_t> &st
+        util::stack<token_t> &st
     ) {
         // expr_push_strategy requires info to build m_token object
         m_expr_push_strat(m_token, expr, st, this);
@@ -196,12 +196,12 @@ public:
 
     void expr_push(
         util::vector<token_t> &expr,
-        util::stack_t<token_t> &st
+        util::stack<token_t> &st
     ) {
         pimpl->expr_push(expr, st);
     }
 
-    void calc_process(util::stack_t<double> &st) {
+    void calc_process(util::stack<double> &st) {
         pimpl->calc_process(st);
     }
 
@@ -252,7 +252,7 @@ public:
     }
 
     int num_of_commas;
-    util::stack_t<int> parenthesis_commas; /*needed for check of parenthesis and commas*/
+    util::stack<int> parenthesis_commas; /*needed for check of parenthesis and commas*/
 };
 
 } // namespace postfix
