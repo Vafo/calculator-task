@@ -12,84 +12,100 @@
 namespace postfix::util {
 
 template<typename T>
-class vector_t {
+class vector {
 public:
-    typedef int size_type;
+    typedef ssize_t size_type;
     typedef T* obj_ptr;
     typedef const T* const_obj_ptr;
     typedef T value_type;
 
-    vector_t(): m_raw_ptr(nullptr), m_size(0), m_capacity(0) {}
+    vector(): m_raw_ptr(nullptr), m_size(0), m_capacity(0) {}
 
-    vector_t(size_type size): 
+    // Constructor: default construct [size] elements
+    vector(size_type size): 
         m_raw_ptr(
             allocator.allocate(size)
         ),
         m_size(size),
-        m_capacity(size) {
+        m_capacity(size)
+    {
         for(size_type i = 0; i < m_size; ++i)
             allocator.construct(&m_raw_ptr[i]);
     }
 
-    vector_t(size_type size, const T &el): 
+    // Constructor: copy construct [size] elements from [el]
+    vector(size_type size, const T& el): 
         m_raw_ptr(
             allocator.allocate(size)
         ),
         m_size(size),
-        m_capacity(size) {
+        m_capacity(size)
+    {
         for(size_type i = 0; i < m_size; ++i)
             allocator.construct(&m_raw_ptr[i], el);
     }
 
-    vector_t(const vector_t &other):
+    // Constructor: copy construct from [other]
+    vector(const vector& other):
         m_raw_ptr(
             allocator.allocate(other.m_size)
         ),
         m_size(other.m_size),
-        m_capacity(other.m_size) {
-            copy(other.m_raw_ptr,
-                 other.m_size, 
-                 m_raw_ptr);
+        m_capacity(other.m_size)
+    {
+        copy_obj(other.m_raw_ptr,
+                other.m_size, 
+                m_raw_ptr);
     }
 
-    vector_t(std::initializer_list<T> list):
+    // Constructor: construct from initializer list
+    vector(std::initializer_list<T> list):
         m_raw_ptr(
             allocator.allocate(list.size())
         ),
         m_size(list.size()),
-        m_capacity(list.size()) {
-            copy(
-                list.begin(),
-                list.size(),
-                m_raw_ptr
-            );
+        m_capacity(list.size())
+    {
+        copy_obj(
+            list.begin(),
+            list.size(),
+            m_raw_ptr
+        );
     }
 
-    vector_t& operator=(vector_t other) {
+    vector& operator=(vector other) {
         swap(*this, other);
         return *this;
     }
 
-    ~vector_t() {
+    ~vector() {
         destroy();
     }
 
-    size_type size() {
+    size_type size() const {
         return m_size;
     }
 
-    bool empty() {
-        return m_size == 0;
+    bool empty() const {
+        return size() == 0;
     }
 
     value_type&
     operator[](size_type n) {
         assert(0 <= n && n < m_size);
+
+        return m_raw_ptr[n];
+    }
+
+    const value_type&
+    operator[](size_type n) const {
+        assert(0 <= n && n < m_size);
+        
         return m_raw_ptr[n];
     }
 
     bool
-    operator==(const vector_t<T>& other) {
+    operator==(const vector<T>& other) const {
         if(m_size != other.m_size)
             return false;
 
@@ -100,6 +116,7 @@ public:
         return true;
     }
 
+    // Add element to end of vector
     void push_back(const value_type& el) {
         grow(1);
         allocator.construct(&m_raw_ptr[m_size], el);
@@ -107,14 +124,16 @@ public:
     }
 
     void pop_back() {
-        if(m_size > 0) {
-            allocator.destroy(&m_raw_ptr[m_size-1]);
-            --m_size;
-        }
+        assert(!empty());
+
+        allocator.destroy(&m_raw_ptr[m_size-1]);
+        --m_size;
     }
 
+    // Erase element from vector range
     void erase(obj_ptr el) {
         assert(begin() <= el && el < end());
+        
         allocator.destroy(el);
         obj_ptr iter = el;
         while(iter < (end() - 1)) {
@@ -124,6 +143,7 @@ public:
         m_size--;
     }
 
+    // Clear vector's space but do not free it
     void clear() {
         for(size_type i = 0; i < m_size; ++i)
             allocator.destroy(&m_raw_ptr[i]);
@@ -153,7 +173,7 @@ private:
     size_type m_size;
     size_type m_capacity;
 
-    void copy(const_obj_ptr src, size_type size, obj_ptr res) {
+    void copy_obj(const_obj_ptr src, size_type size, obj_ptr res) {
         for (size_type i = 0; i < size; ++i)
             allocator.construct(&res[i], src[i]);
     }
@@ -189,7 +209,7 @@ private:
     }
 
 public:
-    friend void swap(vector_t &a, vector_t &b) {
+    friend void swap(vector &a, vector &b) {
         using std::swap;
         swap(a.allocator, b.allocator);
         swap(a.m_capacity, b.m_capacity);

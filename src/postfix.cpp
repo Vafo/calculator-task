@@ -60,7 +60,7 @@ const char *
 postfix_converter_impl_t::to_operator(
     const char *beg,
     const char *end,
-    util::vector_t<token_t>& candidate_tokens /*out*/
+    util::vector<token_t>& candidate_tokens /*out*/
 ) {
     assert(beg != NULL && end != NULL);
     if(beg == end)
@@ -70,9 +70,9 @@ postfix_converter_impl_t::to_operator(
         beg++;
 
     std::string op_name; // potential operation name
-    util::vector_t<token_t> found_candidate_tokens;
+    util::vector<token_t> found_candidate_tokens;
     
-    util::vector_t<int> candidates(factory_names.size()); // Ideal type would be unordered_set
+    util::vector<int> candidates(factory_names.size()); // Ideal type would be unordered_set
     std::iota(candidates.begin(), candidates.end(), 0);
     int comp_val;
     int found_idx = -1;
@@ -129,7 +129,7 @@ const char*
 postfix_converter_impl_t::get_token_candidates(
     const char* beg,
     const char* end,
-    util::vector_t<token_t>& candidate_tokens /*out*/
+    util::vector<token_t>& candidate_tokens /*out*/
 ) {
     const char *iter;
     double num;
@@ -155,7 +155,7 @@ postfix_converter_impl_t::get_token_candidates(
 // Find token, such that it matches with previous token
 inline token_t prune_tokens(
     token_t& prev_token,
-    util::vector_t<token_t>& candidate_tokens
+    util::vector<token_t>& candidate_tokens
 ) {
     token_t found_token;
     // find appropriate token among candidates
@@ -196,7 +196,7 @@ inline token_t prune_tokens(
 
 postfix_expr_t
 postfix_converter_t::convert(const std::string& input) {
-    util::stack_t< token_t > st;
+    util::stack< token_t > st;
     postfix_expr_t postfix;
 
     // start and end of postfix expr
@@ -207,7 +207,7 @@ postfix_converter_t::convert(const std::string& input) {
         *end = edited_input.end().base();
     
 
-    util::vector_t<token_t> candidate_tokens;
+    util::vector<token_t> candidate_tokens;
     token_t cur_token;
     token_conversion_ctx ctx;
     
@@ -236,7 +236,7 @@ postfix_converter_t::convert(const std::string& input) {
 }
 
 double postfix_expr_t::evaluate() {
-    util::stack_t<double> val_st;
+    util::stack<double> val_st;
     
     for(int i = 0; i < expr.size(); ++i)
         expr[i].calc_process(val_st);

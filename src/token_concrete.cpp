@@ -27,7 +27,7 @@ const std::string token_exp::name = "exp";
 /* Valid previous tokens */
 
 // Operands
-const util::vector_t<precedence_t> token_number::valid_prev_tokens = {
+const util::vector<precedence_t> token_number::valid_prev_tokens = {
     precedence_t::add_n_sub,
     precedence_t::multiplication,
     precedence_t::unary,
@@ -37,7 +37,7 @@ const util::vector_t<precedence_t> token_number::valid_prev_tokens = {
 };
 
 // Grammar
-const util::vector_t<precedence_t> token_left_parenthesis::valid_prev_tokens = {
+const util::vector<precedence_t> token_left_parenthesis::valid_prev_tokens = {
     precedence_t::add_n_sub,
     precedence_t::multiplication,
     precedence_t::unary,
@@ -47,55 +47,55 @@ const util::vector_t<precedence_t> token_left_parenthesis::valid_prev_tokens = {
     precedence_t::comma
 };
 
-const util::vector_t<precedence_t> token_right_parenthesis::valid_prev_tokens = {
+const util::vector<precedence_t> token_right_parenthesis::valid_prev_tokens = {
     precedence_t::number,
 
     precedence_t::left_parenthesis,
     precedence_t::right_paranthesis
 };
 
-const util::vector_t<precedence_t> token_comma::valid_prev_tokens = {
+const util::vector<precedence_t> token_comma::valid_prev_tokens = {
     precedence_t::number,
 
     precedence_t::right_paranthesis
 };
 
 // Operators
-const util::vector_t<precedence_t> token_plus::valid_prev_tokens = {
+const util::vector<precedence_t> token_plus::valid_prev_tokens = {
     precedence_t::number,
 
     precedence_t::right_paranthesis
 };
 
-const util::vector_t<precedence_t> token_plus_unary::valid_prev_tokens = {
+const util::vector<precedence_t> token_plus_unary::valid_prev_tokens = {
     precedence_t::left_parenthesis,
     precedence_t::comma
 };
 
-const util::vector_t<precedence_t> token_minus::valid_prev_tokens = {
+const util::vector<precedence_t> token_minus::valid_prev_tokens = {
     precedence_t::number,
 
     precedence_t::right_paranthesis
 };
 
-const util::vector_t<precedence_t> token_minus_unary::valid_prev_tokens = {
+const util::vector<precedence_t> token_minus_unary::valid_prev_tokens = {
     precedence_t::left_parenthesis,
     precedence_t::comma
 };
 
-const util::vector_t<precedence_t> token_multiplication::valid_prev_tokens = {
+const util::vector<precedence_t> token_multiplication::valid_prev_tokens = {
     precedence_t::number,
 
     precedence_t::right_paranthesis
 };
 
-const util::vector_t<precedence_t> token_division::valid_prev_tokens = {
+const util::vector<precedence_t> token_division::valid_prev_tokens = {
     precedence_t::number,
 
     precedence_t::right_paranthesis
 };
 
-const util::vector_t<precedence_t> token_exp::valid_prev_tokens = {
+const util::vector<precedence_t> token_exp::valid_prev_tokens = {
     precedence_t::add_n_sub,
     precedence_t::multiplication,
     precedence_t::unary,
