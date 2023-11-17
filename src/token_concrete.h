@@ -35,7 +35,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::number;
     static const num_operands_t num_operands = 0;
-    static const util::vector_t<precedence_t> valid_prev_tokens;
+    static const util::vector<precedence_t> valid_prev_tokens;
 };
 
 
@@ -46,7 +46,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::left_parenthesis;
     static const num_operands_t num_operands = 0;
-    static const util::vector_t<precedence_t> valid_prev_tokens;
+    static const util::vector<precedence_t> valid_prev_tokens;
 };
 
 class token_right_parenthesis {
@@ -54,7 +54,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::right_paranthesis;
     static const num_operands_t num_operands = 0;
-    static const util::vector_t<precedence_t> valid_prev_tokens;
+    static const util::vector<precedence_t> valid_prev_tokens;
 };
 
 class token_comma {
@@ -62,7 +62,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::comma;
     static const num_operands_t num_operands = 0;
-    static const util::vector_t<precedence_t> valid_prev_tokens;
+    static const util::vector<precedence_t> valid_prev_tokens;
 };
 
 
@@ -73,7 +73,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::add_n_sub;
     static const num_operands_t num_operands = 2;
-    static const util::vector_t<precedence_t> valid_prev_tokens;
+    static const util::vector<precedence_t> valid_prev_tokens;
 };
 
 class token_plus_unary {
@@ -81,7 +81,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::unary;
     static const num_operands_t num_operands = 1;
-    static const util::vector_t<precedence_t> valid_prev_tokens;
+    static const util::vector<precedence_t> valid_prev_tokens;
 };
 
 class token_minus {
@@ -89,7 +89,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::add_n_sub;
     static const num_operands_t num_operands = 2;
-    static const util::vector_t<precedence_t> valid_prev_tokens;
+    static const util::vector<precedence_t> valid_prev_tokens;
 };
 
 class token_minus_unary {
@@ -97,7 +97,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::unary;
     static const num_operands_t num_operands = 1;
-    static const util::vector_t<precedence_t> valid_prev_tokens;
+    static const util::vector<precedence_t> valid_prev_tokens;
 };
 
 class token_multiplication {
@@ -105,7 +105,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::multiplication;
     static const num_operands_t num_operands = 2;
-    static const util::vector_t<precedence_t> valid_prev_tokens;
+    static const util::vector<precedence_t> valid_prev_tokens;
 };
 
 class token_division {
@@ -113,7 +113,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::multiplication;
     static const num_operands_t num_operands = 2;
-    static const util::vector_t<precedence_t> valid_prev_tokens;
+    static const util::vector<precedence_t> valid_prev_tokens;
 };
 
 /* Functions */
@@ -123,7 +123,7 @@ public:
     static const std::string name;
     static const precedence_t prec = precedence_t::function;
     static const num_operands_t num_operands = 2;
-    static const util::vector_t<precedence_t> valid_prev_tokens;
+    static const util::vector<precedence_t> valid_prev_tokens;
 };
 
 
@@ -134,7 +134,7 @@ namespace token_strategies {
 // Callable
 // void func_name(
 //     tokenT& token,
-//     util::vector_t<token_t> &expr,
+//     util::vector<token_t> &expr,
 //     util::stack_t<token_t> &st,
 //     detail::token_concept_t *source_obj
 // )
@@ -142,7 +142,7 @@ namespace token_strategies {
 template<typename tokenT>
 inline void do_push_all_until_left_paren(
     tokenT& token,
-    util::vector_t<token_t> &expr,
+    util::vector<token_t> &expr,
     util::stack_t<token_t> &st,
     detail::token_concept_t *source_obj
 ) {
@@ -163,7 +163,7 @@ inline void do_push_all_until_left_paren(
 template<typename tokenT>
 inline void do_push_all_including_left_paren(
     tokenT& token,
-    util::vector_t<token_t> &expr,
+    util::vector<token_t> &expr,
     util::stack_t<token_t> &st,
     detail::token_concept_t *source_obj
 ) {
@@ -199,41 +199,41 @@ public:
     /* General interface */
     // args are presented in original order
     // e.g. 1 + 2 -> args = {1, 2}
-    // double operator() (tokenT& token, util::vector_t<double> &args) {
+    // double operator() (tokenT& token, util::vector<double> &args) {
 
 
     // token_plus function
-    double operator() (token_plus& token, util::vector_t<double>& args) {
+    double operator() (token_plus& token, util::vector<double>& args) {
         return args[0] + args[1];
     }
 
     // token_plus_unary function
-    double operator() (token_plus_unary& token, util::vector_t<double>& args) {
+    double operator() (token_plus_unary& token, util::vector<double>& args) {
         return args[0];
     }
 
     // token_minus function
-    double operator() (token_minus& token, util::vector_t<double>& args) {
+    double operator() (token_minus& token, util::vector<double>& args) {
         return args[0] - args[1];
     }
 
     // token_minus_unary function
-    double operator() (token_minus_unary& token, util::vector_t<double>& args) {
+    double operator() (token_minus_unary& token, util::vector<double>& args) {
         return -args[0];
     }
 
     // token_multiplication function
-    double operator() (token_multiplication& token, util::vector_t<double>& args) {
+    double operator() (token_multiplication& token, util::vector<double>& args) {
         return args[0] * args[1];
     }
 
     // token_division function
-    double operator() (token_division& token, util::vector_t<double>& args) {
+    double operator() (token_division& token, util::vector<double>& args) {
         return args[0] / args[1];
     }
 
     // token_exp function
-    double operator() (token_exp& token, util::vector_t<double>& args) {
+    double operator() (token_exp& token, util::vector<double>& args) {
         return std::pow(args[0], args[1]);
     }
 };

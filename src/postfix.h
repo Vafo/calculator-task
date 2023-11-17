@@ -42,12 +42,12 @@ public:
     get_token_candidates(
         const char* beg,
         const char* end,
-        util::vector_t<token_t>& candidate_tokens /*out*/
+        util::vector<token_t>& candidate_tokens /*out*/
     );
 
 private:
-    util::vector_t< std::string > factory_names;
-    util::vector_t< token_factory > factories;
+    util::vector< std::string > factory_names;
+    util::vector< token_factory > factories;
     
     // Minus sign is not supported. It is retrieved as separate operator
     const char *
@@ -57,7 +57,7 @@ private:
     to_operator(
         const char *beg,
         const char *end,
-        util::vector_t<token_t>& candidate_tokens /*out*/
+        util::vector<token_t>& candidate_tokens /*out*/
     );
 
     static bool compare_fact(
@@ -91,7 +91,7 @@ public:
     double evaluate();
 private:
 
-    util::vector_t< token_t > expr;
+    util::vector< token_t > expr;
 
     friend class postfix_converter_t; 
 };

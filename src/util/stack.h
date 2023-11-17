@@ -5,7 +5,7 @@
 
 namespace postfix::util {
 
-template<typename T, typename Container = vector_t<T>>
+template<typename T, typename Container = vector<T>>
 class stack_t {
 public:
     typedef typename Container::value_type value_type;

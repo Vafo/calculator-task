@@ -15,7 +15,7 @@ namespace postfix::token_strategies {
 template<typename tokenT>
 inline void do_push_itself_to_stack(
     tokenT& token,
-    util::vector_t<token_t> &expr,
+    util::vector<token_t> &expr,
     util::stack_t<token_t> &st,
     detail::token_concept_t *source_obj
 ) {
@@ -26,7 +26,7 @@ inline void do_push_itself_to_stack(
 template<typename tokenT>
 inline void do_push_itself_to_expr(
     tokenT& token,
-    util::vector_t<token_t> &expr,
+    util::vector<token_t> &expr,
     util::stack_t<token_t> &st,
     detail::token_concept_t *source_obj
 ) {
@@ -37,7 +37,7 @@ inline void do_push_itself_to_expr(
 template<typename tokenT>
 inline void do_push_with_precedence(
     tokenT& token,
-    util::vector_t<token_t> &expr,
+    util::vector<token_t> &expr,
     util::stack_t<token_t> &st,
     detail::token_concept_t *source_obj
 ) {
@@ -84,7 +84,7 @@ inline void do_calc_apply(
     }
 
     // Collect all arguments, in original order
-    util::vector_t<double> func_args(token.num_operands);
+    util::vector<double> func_args(token.num_operands);
     for(int i = token.num_operands - 1; i >= 0; --i) {
         func_args[i] = st.peek();
         st.pop();
@@ -97,7 +97,7 @@ inline void do_calc_apply(
 /* get_valid_prev_token Strategies */
 
 template<typename tokenT>
-util::vector_t<precedence_t> do_get_valid_prev_token(tokenT& token) {
+util::vector<precedence_t> do_get_valid_prev_token(tokenT& token) {
     return token.valid_prev_tokens;
 }
 

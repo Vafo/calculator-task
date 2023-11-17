@@ -4,8 +4,8 @@
 
 namespace postfix::util {
 
-TEST_CASE("vector_t: push_back", "[vector_t][normal]") {
-    vector_t<int> vec;
+TEST_CASE("vector: push_back", "[vector][normal]") {
+    vector<int> vec;
     int true_range[10];
     int true_range_small[5];
     for(int i = 0; i < 10; ++i) {
@@ -28,26 +28,26 @@ TEST_CASE("vector_t: push_back", "[vector_t][normal]") {
 
 }
 
-TEST_CASE("vector_t: constructor", "[vector_t][normal]") {
-    vector_t<int> vec;
+TEST_CASE("vector: constructor", "[vector][normal]") {
+    vector<int> vec;
     for(int i = 0; i < 10; ++i)
         vec.push_back(i);
 
     SECTION("copy constructor") {
-        vector_t<int> vec2(vec);
+        vector<int> vec2(vec);
 
         REQUIRE_THAT(vec, Catch::Matchers::RangeEquals(vec2));
     }
 
     SECTION("assignment operator") {
-        vector_t<int> vec2;
+        vector<int> vec2;
         vec2 = vec;
 
         REQUIRE_THAT(vec, Catch::Matchers::RangeEquals(vec2));
     }
     
     SECTION("assignment operator 2") {
-        vector_t<int> vec2 = {1, 2, 3, 4};
+        vector<int> vec2 = {1, 2, 3, 4};
         vec2 = vec;
 
         REQUIRE_THAT(vec, Catch::Matchers::RangeEquals(vec2));
@@ -101,15 +101,15 @@ int example_t::copy_const = 0;
 int example_t::assignment_op = 0;
 int example_t::destruct = 0;
 
-TEST_CASE("vector_t: constructor calls", "[vector_t][normal]") {
-    vector_t<example_t> vec(5);
+TEST_CASE("vector: constructor calls", "[vector][normal]") {
+    vector<example_t> vec(5);
     REQUIRE(example_t::default_const == 5);
 
-    vector_t<example_t> vec2(vec);
+    vector<example_t> vec2(vec);
     REQUIRE(example_t::copy_const == 5);
 
     {
-        vector_t<example_t> vec3;
+        vector<example_t> vec3;
         // vec3 does not create any object
         REQUIRE(example_t::default_const + example_t::copy_const == 10);
 
@@ -120,7 +120,7 @@ TEST_CASE("vector_t: constructor calls", "[vector_t][normal]") {
     vec = vec2;
 /*  
     No more valid tests, as copying of vector, does not consider reusing previous space
-    vector_t assignment uses copy-and-swap idiom
+    vector assignment uses copy-and-swap idiom
 
     // They have enough space, no space for object is allocated
     REQUIRE(example_t::default_const + example_t::copy_const == 15);
@@ -131,13 +131,13 @@ TEST_CASE("vector_t: constructor calls", "[vector_t][normal]") {
 */
 }
 
-TEST_CASE("vector_t: erase", "[vector_t][normal]") {
-    vector_t<int> ivec(10);
+TEST_CASE("vector: erase", "[vector][normal]") {
+    vector<int> ivec(10);
     std::iota(ivec.begin(), ivec.end(), 0);
 
     SECTION("erase begin()") {
         for(int i = 0; i < 10; ++i) {
-            vector_t<int> test_vec(10 - i);
+            vector<int> test_vec(10 - i);
             std::iota(test_vec.begin(), test_vec.end(), i);
             REQUIRE_THAT(ivec, Catch::Matchers::RangeEquals(test_vec));
 
@@ -148,7 +148,7 @@ TEST_CASE("vector_t: erase", "[vector_t][normal]") {
     for(int i = 0; i < 10; ++i) {
         SECTION("erase at ith pos") {
             ivec.erase(ivec.begin() + i);
-            vector_t<int> test_vec(10 - 1);
+            vector<int> test_vec(10 - 1);
             std::iota(test_vec.begin(), test_vec.begin() + i, 0);
             std::iota(test_vec.begin() + i, test_vec.end(), i + 1);
 

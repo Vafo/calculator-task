@@ -36,7 +36,7 @@ public:
 
     // expr_push 
     virtual void expr_push(
-        util::vector_t<token_t> &expr,
+        util::vector<token_t> &expr,
         util::stack_t<token_t> &st
     ) = 0;
 
@@ -50,7 +50,7 @@ public:
 
     virtual num_operands_t get_num_operands() = 0;
 
-    virtual util::vector_t<precedence_t> get_valid_prev_token_prec() = 0;
+    virtual util::vector<precedence_t> get_valid_prev_token_prec() = 0;
 
     virtual 
     util::unique_ptr<token_concept_t> clone() const = 0;
@@ -94,14 +94,14 @@ public:
     }
 
     void expr_push(
-        util::vector_t<token_t> &expr,
+        util::vector<token_t> &expr,
         util::stack_t<token_t> &st
     ) {
         // expr_push_strategy requires info to build m_token object
         m_expr_push_strat(m_token, expr, st, this);
     }
 
-    util::vector_t<precedence_t> get_valid_prev_token_prec() {
+    util::vector<precedence_t> get_valid_prev_token_prec() {
         return m_get_valid_prev_token_strat(m_token);
     }
 
@@ -195,7 +195,7 @@ public:
     }
 
     void expr_push(
-        util::vector_t<token_t> &expr,
+        util::vector<token_t> &expr,
         util::stack_t<token_t> &st
     ) {
         pimpl->expr_push(expr, st);
@@ -212,7 +212,7 @@ public:
 
     // get vector of valid tokens' precedences
     // which are valid to be placed before *this
-    util::vector_t<precedence_t> get_valid_prev_token_prec() {
+    util::vector<precedence_t> get_valid_prev_token_prec() {
         return pimpl->get_valid_prev_token_prec();
     }
 
@@ -227,7 +227,7 @@ public:
     }
 
     bool is_valid_to_place_after(const token_t& before) {
-        util::vector_t<precedence_t> valid_prev = get_valid_prev_token_prec();
+        util::vector<precedence_t> valid_prev = get_valid_prev_token_prec();
         precedence_t prec = before.get_precedence();
 
         for(int i = 0; i < valid_prev.size(); ++i)
