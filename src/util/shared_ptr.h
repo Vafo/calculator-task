@@ -30,17 +30,19 @@ public:
     template<typename D>
     shared_ptr(const D& obj): impl(NULL) {
         static_assert(std::is_base_of<T, D>::value);
+
         std::allocator<D> d_allocator;
         D *ptr = d_allocator.allocate(1);
         d_allocator.construct(ptr, obj);
         impl = new shared_ptr_impl(ptr);
     }
 
-    // allocate copy of obj
+    // Take ownership of obj
     // Argument is pointer to derived object
     template<typename D>
-    shared_ptr(D* obj): impl(NULL) {
+    shared_ptr(const D* obj): impl(NULL) {
         static_assert(std::is_base_of<T, D>::value);
+
         if(obj != NULL)
             impl = new shared_ptr_impl(obj);
     }
@@ -127,11 +129,11 @@ public:
         swap(a.allocator, b.allocator);
     }
 
-    bool operator== (const shared_ptr<T> &b) {
+    bool operator== (const shared_ptr &b) const {
         return impl->obj == b.impl->obj;
     }
 
-    bool operator!= (const shared_ptr<T> &b) {
+    bool operator!= (const shared_ptr &b) const {
         return !(*this == b);
     }
 };

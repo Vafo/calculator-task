@@ -4,7 +4,7 @@
 #include <memory>
 #include <cassert>
 
-#include <iostream>
+#include "util.h"
 
 namespace postfix::util {
 
@@ -14,6 +14,7 @@ public:
     unique_ptr(): ptr(nullptr) { }
 
     unique_ptr(const unique_ptr& other) = delete;
+
     template<typename D, typename D_Deleter>
     unique_ptr(unique_ptr<D, D_Deleter>&& other): ptr(NULL) {
         static_assert(std::is_base_of<T, D>::value);
@@ -26,14 +27,19 @@ public:
     }
 
     unique_ptr& operator=(const unique_ptr& other) = delete;
+
     template<typename D, typename D_Deleter>
     unique_ptr& operator=(unique_ptr<D, D_Deleter>&& other) {
+        static_assert(std::is_base_of<T, D>::value);
+        
         reset(other.release());
         return *this;
     }
 
     ~unique_ptr() {
         if(ptr != NULL) {
+            check_if_deletable(ptr);
+
             Deleter deleter;
             deleter(ptr);
         }
