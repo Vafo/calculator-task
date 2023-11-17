@@ -14,7 +14,7 @@ namespace postfix::util {
 template<typename T>
 class vector {
 public:
-    typedef size_t size_type;
+    typedef ssize_t size_type;
     typedef T* obj_ptr;
     typedef const T* const_obj_ptr;
     typedef T value_type;
