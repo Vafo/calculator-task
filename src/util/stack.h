@@ -5,23 +5,23 @@
 
 namespace postfix::util {
 
-template<typename T, typename Container = vector_t<T>>
-class stack_t {
+template<typename T, typename Container = vector<T>>
+class stack {
 public:
     typedef typename Container::value_type value_type;
     typedef typename Container::size_type size_type;
 
-    stack_t() { }
+    stack() { }
     
-    stack_t(std::initializer_list<T> list): c(list) {}
+    stack(std::initializer_list<T> list): c(list) {}
 
     bool
-    operator==(const stack_t& other) {
+    operator==(const stack& other) const{
         return c == other.c;
     }
 
-    stack_t&
-    operator=(stack_t other) {
+    stack&
+    operator=(stack other) {
         swap(*this, other);
         return *this;
     }
@@ -35,21 +35,28 @@ public:
     }
 
     value_type& peek() {
-        assert(c.size() != 0);
+        assert(!c.empty());
+
         return c[c.size()-1];
     }
 
-    size_type size() {
+    const value_type& peek() const {
+        assert(!c.empty());
+
+        return c[c.size()-1];
+    }
+
+    size_type size() const {
         return c.size();
     }
 
-    bool empty() {
+    bool empty() const {
         return c.empty();
     }
 
 // swap interface
 public:
-    friend void swap(stack_t &a, stack_t &b) {
+    friend void swap(stack &a, stack &b) {
         using std::swap;
         
         swap(a.c, b.c);

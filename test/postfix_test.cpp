@@ -37,9 +37,12 @@ public:
         const char* begin, const char *end,
         token_t& token/*out*/
     ) {
-        util::vector_t<token_t> candidates;
+        util::vector<token_t> candidates;
         const char *iter = impl.to_operator(begin, end, candidates);
         
+        if(candidates.empty())
+            throw std::logic_error("no token found");
+
         token = candidates[0];
         return iter;
     }
@@ -48,7 +51,7 @@ public:
         const char* begin, const char *end,
         token_t& token/*out*/
     ) {
-        util::vector_t<token_t> candidates;
+        util::vector<token_t> candidates;
         const char *iter = impl.get_token_candidates(begin, end, candidates);
         token = candidates[0];
         return iter;

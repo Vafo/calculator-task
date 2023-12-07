@@ -5,7 +5,7 @@
 
 namespace postfix {
 
-// Can build everyone, except numbers :-(
+// Can build everyone, except numbers :-( (as they require argument - number)
 class token_factory {
 public:
 

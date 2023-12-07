@@ -32,15 +32,14 @@ namespace detail {
 class token_concept_t {
 public:
     // calc_process
-    virtual void calc_process(util::stack_t<double> &st) = 0;
+    virtual void calc_process(util::stack<double> &st) = 0;
 
     // expr_push 
     virtual void expr_push(
-        util::vector_t<token_t> &expr,
-        util::stack_t<token_t> &st
+        util::vector<token_t> &expr,
+        util::stack<token_t> &st
     ) = 0;
 
-    // influence context of conversion of sequence of tokens
     virtual void influence_ctx(token_conversion_ctx& ctx) = 0;
 
     // get name of token
@@ -51,9 +50,7 @@ public:
 
     virtual num_operands_t get_num_operands() = 0;
 
-    // get vector of valid tokens' precedences
-    // which are valid to be placed before *this
-    virtual util::vector_t<precedence_t> get_valid_prev_token_prec() = 0;
+    virtual util::vector<precedence_t> get_valid_prev_token_prec() = 0;
 
     virtual 
     util::unique_ptr<token_concept_t> clone() const = 0;
@@ -92,19 +89,19 @@ public:
         m_influence_ctx_strat( in_influence_ctx_strat )
     {}
 
-    void calc_process(util::stack_t<double> &st) { 
+    void calc_process(util::stack<double> &st) { 
         m_calc_strat(m_token, st);
     }
 
     void expr_push(
-        util::vector_t<token_t> &expr,
-        util::stack_t<token_t> &st
+        util::vector<token_t> &expr,
+        util::stack<token_t> &st
     ) {
         // expr_push_strategy requires info to build m_token object
         m_expr_push_strat(m_token, expr, st, this);
     }
 
-    util::vector_t<precedence_t> get_valid_prev_token_prec() {
+    util::vector<precedence_t> get_valid_prev_token_prec() {
         return m_get_valid_prev_token_strat(m_token);
     }
 
@@ -142,6 +139,7 @@ private:
 
 } // namespace detail
 
+// Type-erased token
 class token_t {
 public:
 
@@ -175,6 +173,7 @@ public:
         )
     ) {}
 
+    // Constructor for cloned token_concept_t
     token_t(
         util::unique_ptr<detail::token_concept_t> pimpl_in
     ):
@@ -196,21 +195,24 @@ public:
     }
 
     void expr_push(
-        util::vector_t<token_t> &expr,
-        util::stack_t<token_t> &st
+        util::vector<token_t> &expr,
+        util::stack<token_t> &st
     ) {
         pimpl->expr_push(expr, st);
     }
 
-    void calc_process(util::stack_t<double> &st) {
+    void calc_process(util::stack<double> &st) {
         pimpl->calc_process(st);
     }
 
+    // influence context of conversion of sequence of tokens
     void influence_ctx(token_conversion_ctx& ctx) {
         pimpl->influence_ctx(ctx);
     }
 
-    util::vector_t<precedence_t> get_valid_prev_token_prec() {
+    // get vector of valid tokens' precedences
+    // which are valid to be placed before *this
+    util::vector<precedence_t> get_valid_prev_token_prec() {
         return pimpl->get_valid_prev_token_prec();
     }
 
@@ -225,7 +227,7 @@ public:
     }
 
     bool is_valid_to_place_after(const token_t& before) {
-        util::vector_t<precedence_t> valid_prev = get_valid_prev_token_prec();
+        util::vector<precedence_t> valid_prev = get_valid_prev_token_prec();
         precedence_t prec = before.get_precedence();
 
         for(int i = 0; i < valid_prev.size(); ++i)
@@ -245,8 +247,12 @@ public:
     token_conversion_ctx():
         num_of_commas(0) {}
 
+    bool is_valid() {
+        return parenthesis_commas.empty();
+    }
+
     int num_of_commas;
-    util::stack_t<int> parenthesis_commas; /*needed for check of parenthesis and commas*/
+    util::stack<int> parenthesis_commas; /*needed for check of parenthesis and commas*/
 };
 
 } // namespace postfix

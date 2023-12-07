@@ -35,7 +35,7 @@ TEST_CASE("shared_ptr: copy ptr", "[shared_ptr][normal]") {
 
 TEST_CASE("shared_ptr: vector of shared_ptr", "[shared_ptr][normal]") {
     const int iterations = 10;
-    vector_t<shared_ptr<int>> ptrvec;
+    vector<shared_ptr<int>> ptrvec;
     for(int i = 0; i < iterations; ++i)
         // Conversion constructor is called
         ptrvec.push_back(i);
@@ -75,7 +75,7 @@ TEST_CASE("shared_ptr: count const and dest of class", "[shared_ptr][normal]") {
     SECTION("constuct ptrs in vector") {
         assert(counter_t::counter == 0);
         {
-            vector_t<shared_ptr<counter_t>> count_vec;
+            vector<shared_ptr<counter_t>> count_vec;
             for(int i = 0; i < iterations; ++i)
                 count_vec.push_back(counter_t());
             REQUIRE(counter_t::counter == iterations);
