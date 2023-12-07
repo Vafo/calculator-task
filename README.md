@@ -4,6 +4,11 @@
 This project implements basic infix calculator, with extendability in mind.
 Unary and binary operators and functions are supported.
 
+## Contents
+* Infix to postfix conversion implementation
+* Token object, which represents numbers, operators etc. Attempted to be extendable
+* basic implementation of vector, stack and smart pointers residing in util directory. It reappears in next projects and may not be synced
+
 ## Usage
 <dl>
   <dt>
